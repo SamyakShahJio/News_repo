@@ -298,13 +298,14 @@ const ICONS = {
 const ELEVENLABS_API_KEY = 'sk_86a2daf2318ba84afa5190ff9a2c09fcc9e7f9dafea1fe79';
 // Hindi voice options (all tested & working)
 const HINDI_VOICES = {
+  raju:    { id: 'zT03pEAEi0VHKciJODfn', name: 'Raju', desc: 'Relatable Hindi voice' },
   aakash:  { id: 'N2al4jd45e882svx17SU', name: 'Aakash Aryan', desc: 'Deep Hindi bass' },
   viraj:   { id: 'FmBhnvP58BK0vz65OOj7', name: 'Viraj', desc: 'Energetic Hindi narrator' },
   ranbir:  { id: 'yRis6UiS4dtT4Aqv72DC', name: 'Ranbir M', desc: 'Deep, engaging Hindi' },
   ahmed:   { id: 'k7nOSUCadIEwB6fdJmbw', name: 'Ahmed', desc: 'Professional Hindi' },
   pkanil:  { id: 'JTPrASXyK62cF3L7w8hv', name: 'P K Anil', desc: 'Clear Hindi diction' },
 };
-let activeVoiceId = HINDI_VOICES.ranbir.id; // Default: Ranbir (deep, engaging - best for Aakashvani)
+let activeVoiceId = HINDI_VOICES.raju.id; // Default: Raju (relatable Hindi voice)
 const ttsCache = new Map();
 let currentAudio = null;
 let isSpeaking = false;
@@ -720,7 +721,7 @@ async function goToState(state) {
 
 function selectStyle(style) {
   if (style === 'aakashvani') {
-    activeVoiceId = HINDI_VOICES.ranbir.id;
+    activeVoiceId = HINDI_VOICES.raju.id;
   }
   addMsg('user', 'Aakashvani andaaz mein sunana hai').then(() => goToState('style_selected'));
 }
