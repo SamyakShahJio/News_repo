@@ -150,111 +150,18 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
   box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 
-/* Hero section */
-.hero-visual {
-  position: relative; width: 100%; aspect-ratio: 16/10; overflow: hidden;
-  background: linear-gradient(135deg, #0a0f2e 0%, #1a1f4e 40%, #0d2847 100%);
+/* Hero poster (portrait) — scale 360×640 poster to fill card width */
+.hero-poster-wrap {
+  position: relative; width: 100%; overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  /* height = card-width * (640/360) but capped for UX */
+  aspect-ratio: 9/14;
 }
-.hero-stadium {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 120%, rgba(53,53,243,0.3) 0%, transparent 60%),
-    radial-gradient(ellipse at 20% 30%, rgba(247,171,32,0.15) 0%, transparent 40%),
-    radial-gradient(ellipse at 80% 20%, rgba(30,204,176,0.1) 0%, transparent 40%);
+.hero-poster-wrap iframe {
+  width: 360px; height: 640px; border: none; display: block;
+  pointer-events: none;
+  transform-origin: top left;
 }
-.hero-lights {
-  position: absolute; top: 0; left: 0; right: 0; height: 60%;
-  background: radial-gradient(ellipse at 25% 0%, rgba(255,255,255,0.08) 0%, transparent 50%),
-              radial-gradient(ellipse at 75% 0%, rgba(255,255,255,0.08) 0%, transparent 50%);
-}
-
-/* Confetti */
-.confetti-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-.confetti {
-  position: absolute; width: 8px; height: 8px; opacity: 0;
-  animation: confettiFall 3s ease-in infinite;
-}
-@keyframes confettiFall {
-  0% { opacity: 0; transform: translateY(-20px) rotate(0deg); }
-  10% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(300px) rotate(720deg); }
-}
-
-/* Celebration figures */
-.hero-figures {
-  position: absolute; bottom: 80px; left: 0; right: 0;
-  display: flex; justify-content: center; gap: 12px;
-}
-.hero-figure {
-  width: 36px; height: 56px; border-radius: 18px 18px 6px 6px;
-  position: relative; animation: celebrate 0.6s ease-in-out infinite alternate;
-}
-.hero-figure:nth-child(2) { animation-delay: 0.15s; }
-.hero-figure:nth-child(3) { animation-delay: 0.3s; }
-.hero-figure:nth-child(4) { animation-delay: 0.1s; }
-.hero-figure:nth-child(5) { animation-delay: 0.25s; }
-@keyframes celebrate { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
-.figure-head {
-  width: 18px; height: 18px; border-radius: 50%; position: absolute;
-  top: -4px; left: 50%; transform: translateX(-50%);
-}
-.figure-arm-l, .figure-arm-r {
-  position: absolute; top: 16px; width: 4px; height: 22px;
-  border-radius: var(--radius-pill);
-}
-.figure-arm-l { left: -2px; transform-origin: top center; animation: armWave 0.6s ease-in-out infinite alternate; }
-.figure-arm-r { right: -2px; transform-origin: top center; animation: armWave 0.6s ease-in-out infinite alternate-reverse; }
-@keyframes armWave { 0% { transform: rotate(30deg); } 100% { transform: rotate(-15deg); } }
-
-/* Trophy */
-.hero-trophy {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -58%);
-  font-size: 64px; filter: drop-shadow(0 0 30px rgba(247,171,32,0.5));
-  animation: trophyPulse 2s ease-in-out infinite;
-}
-@keyframes trophyPulse { 0%,100% { transform: translate(-50%,-58%) scale(1); } 50% { transform: translate(-50%,-58%) scale(1.06); } }
-
-/* Overlay */
-.hero-overlay {
-  position: absolute; inset: 0; display: flex; flex-direction: column;
-  justify-content: flex-end; padding: 16px;
-  background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
-}
-.hero-breaking-badge {
-  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
-  padding: 3px 10px; border-radius: var(--radius-pill); background: var(--error);
-}
-.breaking-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--white); animation: livePulse 1s infinite; }
-.breaking-text { font-size: 9px; font-weight: 900; color: var(--white); text-transform: uppercase; letter-spacing: 1.5px; }
-
-.hero-headline {
-  font-size: 20px; font-weight: 900; color: var(--white); line-height: 1.15;
-  letter-spacing: -0.5px; margin-top: 6px;
-}
-.hero-headline-gold { color: var(--secondary-40); }
-
-/* Score strip */
-.score-strip {
-  display: flex; align-items: center; gap: 8px; margin-top: 8px;
-  padding: 8px 12px; border-radius: var(--radius-sm);
-  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.score-flag {
-  width: 24px; height: 16px; border-radius: 2px; overflow: hidden;
-  display: flex; flex-direction: column; flex-shrink: 0;
-}
-.flag-ind-top { flex: 1; background: var(--warning); }
-.flag-ind-mid { flex: 1; background: var(--white); display: flex; align-items: center; justify-content: center; }
-.flag-ind-mid-dot { width: 4px; height: 4px; border-radius: 50%; border: 1px solid var(--primary-50); }
-.flag-ind-bot { flex: 1; background: var(--success); }
-.flag-pak { background: var(--success); position: relative; }
-.flag-pak-white { position: absolute; left: 0; top: 0; bottom: 0; width: 30%; background: var(--white); }
-
-.score-team { font-size: 11px; font-weight: 700; color: var(--white); }
-.score-runs { font-size: 11px; font-weight: 900; color: var(--secondary-40); }
-.score-vs { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); }
-.score-result { font-size: 11px; font-weight: 700; color: var(--sparkle-50); margin-left: auto; }
 
 /* Card body */
 .card-body { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
@@ -560,23 +467,6 @@ function addRaw(html, fullWidth) {
   return div;
 }
 
-// ============== CONFETTI ==============
-function spawnConfetti(container) {
-  const colors = ['#ffd947','#1eccb0','#9999ff','#fa2f40','#ffffff'];
-  for (let i = 0; i < 35; i++) {
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = Math.random()*100+'%';
-    c.style.animationDelay = Math.random()*3+'s';
-    c.style.animationDuration = (2+Math.random()*2)+'s';
-    c.style.background = colors[Math.floor(Math.random()*colors.length)];
-    c.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
-    c.style.width = (3+Math.random()*7)+'px';
-    c.style.height = (3+Math.random()*7)+'px';
-    container.appendChild(c);
-  }
-}
-
 // ============== LANGUAGE DATA ==============
 const langData = {
   en: {
@@ -612,13 +502,6 @@ function switchLang(lang) {
   currentLang = lang;
   const d = langData[lang];
   document.querySelectorAll('.lang-chip').forEach(c => c.classList.toggle('active', c.dataset.lang === lang));
-  const headline = document.getElementById('cardHeadline');
-  if (headline) headline.innerHTML = d.headline;
-  const t1 = document.getElementById('sTeam1'); if (t1) t1.textContent = d.team1;
-  const r1 = document.getElementById('sRuns1'); if (r1) r1.textContent = d.runs1;
-  const t2 = document.getElementById('sTeam2'); if (t2) t2.textContent = d.team2;
-  const r2 = document.getElementById('sRuns2'); if (r2) r2.textContent = d.runs2;
-  const rs = document.getElementById('sResult'); if (rs) rs.textContent = d.result;
   const pl = document.getElementById('potmLabel'); if (pl) pl.textContent = d.potmLabel;
   const ps = document.getElementById('potmStats'); if (ps) ps.textContent = d.potmStats;
   speakText(d.celebVoice, lang);
@@ -693,51 +576,14 @@ async function openBreakingCard() {
   // Replace skeleton with real card
   skelDiv.remove();
 
-  const figureColors = ['#1a5276','#154360','#1a5276','#1b4f72','#154360'];
-  const skinTones = ['#d4a373','#c8a87c','#d4a373','#c8a87c','#d4a373'];
-  const figures = figureColors.map((c,i) => `
-    <div class="hero-figure" style="background:linear-gradient(180deg, ${c} 60%, #ffffff 60%)">
-      <div class="figure-head" style="background:${skinTones[i]}"></div>
-      <div class="figure-arm-l" style="background:${c}"></div>
-      <div class="figure-arm-r" style="background:${c}"></div>
-    </div>`).join('');
-
   const cardHtml = `
     <div class="breaking-card">
-      <div class="hero-visual">
-        <div class="hero-stadium"></div>
-        <div class="hero-lights"></div>
-        <div class="confetti-container" id="confettiBox"></div>
-        <div class="hero-figures">${figures}</div>
-        <div class="hero-trophy">&#127942;</div>
-        <div class="hero-overlay">
-          <div class="hero-breaking-badge">
-            <div class="breaking-dot"></div>
-            <div class="breaking-text">Breaking</div>
-          </div>
-          <div class="hero-headline" id="cardHeadline">
-            <span class="hero-headline-gold">INDIA WINS</span><br>CHAMPIONS TROPHY 2025!
-          </div>
-          <div class="score-strip">
-            <div class="score-flag"><div class="flag-ind-top"></div><div class="flag-ind-mid"><div class="flag-ind-mid-dot"></div></div><div class="flag-ind-bot"></div></div>
-            <div><div class="score-team" id="sTeam1">INDIA</div><div class="score-runs" id="sRuns1">287/6</div></div>
-            <div class="score-vs">vs</div>
-            <div class="score-flag"><div class="flag-pak" style="width:24px;height:16px;border-radius:2px;overflow:hidden;position:relative;background:var(--success)"><div class="flag-pak-white"></div></div></div>
-            <div><div class="score-team" id="sTeam2">PAKISTAN</div><div class="score-runs" id="sRuns2">241 all out</div></div>
-            <div class="score-result" id="sResult">Won by 46 runs</div>
-          </div>
-        </div>
+      <div class="hero-poster-wrap">
+        <iframe src="poster.html" scrolling="no"></iframe>
       </div>
       <div class="card-body">
-        <div class="potm-card">
-          <div class="potm-avatar">JB</div>
-          <div>
-            <div class="potm-label" id="potmLabel">Player of the Match</div>
-            <div class="potm-name">Jasprit Bumrah</div>
-            <div class="potm-stats" id="potmStats">4/32 (10 overs) | Econ: 3.20</div>
-          </div>
-        </div>
-        <div class="verified-footer">
+        <!-- Verified footer already in poster, but shown here for card body context -->
+        <div class="verified-footer" style="display:none">
           <div class="verified-logo"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 2a1 1 0 00-1 1v18a1 1 0 002 0V3a1 1 0 00-1-1z"/></svg></div>
           <div class="verified-text">JioBharatIQ</div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--primary-50)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -773,10 +619,15 @@ async function openBreakingCard() {
 
   addRaw(cardHtml, true);
 
-  // Spawn confetti
+  // Scale poster iframe to fit card width
   setTimeout(() => {
-    const box = document.getElementById('confettiBox');
-    if (box) spawnConfetti(box);
+    const wrap = document.querySelector('.hero-poster-wrap');
+    const iframe = wrap?.querySelector('iframe');
+    if (wrap && iframe) {
+      const scale = wrap.offsetWidth / 360;
+      iframe.style.transform = `scale(${scale})`;
+      wrap.style.height = (600 * scale) + 'px';
+    }
   }, 100);
 
   // Play celebration voice
