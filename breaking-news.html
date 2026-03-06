@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breaking News Studio - JioBharatIQ</title>
+<!-- jbiq:v3.5.6 -->
+<style>
+@font-face { font-family: 'JioType'; font-weight: 400; src: url('https://raw.githubusercontent.com/sunit1986/JioBharatIQ_Server/main/assets/fonts/woff2/JioTypeVarW05-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'JioType'; font-weight: 500; src: url('https://raw.githubusercontent.com/sunit1986/JioBharatIQ_Server/main/assets/fonts/woff2/JioTypeW05-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'JioType'; font-weight: 700; src: url('https://raw.githubusercontent.com/sunit1986/JioBharatIQ_Server/main/assets/fonts/woff2/JioTypeW05-Bold.woff2') format('woff2'); }
+@font-face { font-family: 'JioType'; font-weight: 900; src: url('https://raw.githubusercontent.com/sunit1986/JioBharatIQ_Server/main/assets/fonts/woff2/JioTypeW05-Black.woff2') format('woff2'); }
+
+:root {
+  --primary-20: #e8e8fc;
+  --primary-30: #9999ff;
+  --primary-50: #3535f3;
+  --primary-60: #000093;
+  --secondary-20: #fef7e9;
+  --secondary-40: #ffd947;
+  --secondary-50: #f7ab20;
+  --sparkle-20: #e8faf7;
+  --sparkle-50: #1eccb0;
+  --error: #fa2f40;
+  --warning: #f06d0f;
+  --success: #25ab21;
+  --grey-100: #141414;
+  --grey-80: rgba(0,0,0,0.66);
+  --grey-60: #b5b5b5;
+  --grey-40: #e0e0e0;
+  --grey-20: #f5f5f5;
+  --surface-ghost: #eeeeef;
+  --surface-ghost-icon: #e7e9ff;
+  --surface-bold: #3900ad;
+  --white: #ffffff;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'JioType'; background: var(--white); display: flex; flex-direction: column; }
+
+.phone-frame { width: 100%; height: 100%; background: var(--white); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+
+/* ============== APP HEADER ============== */
+.app-header {
+  height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid rgba(36,38,43,0.12); background: var(--white);
+  position: relative; z-index: 80; flex-shrink: 0;
+}
+.app-header-avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--primary-50);
+  display: flex; align-items: center; justify-content: center;
+}
+.app-header-info h3 { font-size: 16px; font-weight: 700; color: var(--grey-100); line-height: 1.2; }
+.app-header-info span { font-size: 12px; color: var(--sparkle-50); font-weight: 500; }
+
+/* ============== IN-APP NOTIFICATION BANNER ============== */
+.notif-banner {
+  position: absolute; top: 56px; left: 12px; right: 12px; z-index: 100;
+  background: var(--white); border-radius: var(--radius-lg);
+  padding: 14px 16px; cursor: pointer;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08);
+  border: 1px solid rgba(36,38,43,0.12);
+  transform: translateY(-120%); opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s;
+}
+.notif-banner.visible { transform: translateY(8px); opacity: 1; }
+.notif-banner:active { transform: translateY(8px) scale(0.98); }
+
+.notif-banner-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+.notif-banner-icon {
+  width: 20px; height: 20px; border-radius: var(--radius-xs);
+  background: var(--error); display: flex; align-items: center; justify-content: center;
+}
+.notif-banner-app { font-size: 11px; font-weight: 700; color: var(--grey-80); text-transform: uppercase; letter-spacing: 0.5px; }
+.notif-banner-time { font-size: 11px; font-weight: 500; color: var(--grey-60); margin-left: auto; }
+.notif-banner-live {
+  font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--error); background: rgba(250,47,64,0.1); padding: 2px 6px;
+  border-radius: var(--radius-pill); margin-left: 8px;
+  display: flex; align-items: center; gap: 4px;
+}
+.notif-live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--error); animation: livePulse 1s infinite; }
+@keyframes livePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.notif-banner-title { font-size: 15px; font-weight: 700; color: var(--grey-100); line-height: 1.3; }
+.notif-banner-body { font-size: 13px; font-weight: 500; color: var(--grey-80); margin-top: 2px; line-height: 1.4; }
+.notif-banner-action {
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 8px;
+  font-size: 12px; font-weight: 700; color: var(--primary-50);
+}
+
+/* ============== MAIN CHAT AREA (same as daily news) ============== */
+.chat-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.chat-area {
+  flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 8px;
+  display: flex; flex-direction: column; gap: 12px;
+  scroll-behavior: smooth; background: var(--white);
+}
+.chat-area::-webkit-scrollbar { width: 0; }
+
+.msg { max-width: 88%; animation: msgIn 0.35s ease-out; }
+.msg-ai { align-self: flex-start; }
+.msg-full { max-width: 100%; width: 100%; }
+
+.bubble { padding: 12px 16px; font-size: 14px; line-height: 1.5; color: var(--grey-100); word-wrap: break-word; }
+.bubble-ai { background: var(--surface-ghost); border-radius: var(--radius-xs) var(--radius-lg) var(--radius-lg) var(--radius-lg); }
+
+/* ============== INPUT WIDGET ============== */
+.input-widget { padding: 2px 12px 16px; background: var(--white); position: relative; z-index: 80; flex-shrink: 0; }
+.input-field-wrap {
+  background: var(--surface-ghost); border-radius: var(--radius-xl); padding: 6px;
+  display: flex; flex-direction: column;
+}
+.input-text-area { padding: 10px 8px; display: flex; align-items: center; }
+.input-text-area input {
+  font-family: 'JioType'; font-size: 14px; font-weight: 400; color: var(--grey-100);
+  background: transparent; border: none; outline: none; width: 100%; line-height: 1.3;
+}
+.input-text-area input::placeholder { color: var(--grey-60); opacity: 0.65; }
+.input-actions { display: flex; justify-content: space-between; align-items: center; height: 43px; }
+.input-left-actions { display: flex; gap: 2px; }
+.input-icon-btn {
+  width: 36px; height: 36px; border-radius: var(--radius-pill);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-ghost-icon); border: none; cursor: pointer;
+}
+.input-icon-btn:active { opacity: 0.7; }
+.input-icon-btn svg { width: 20px; height: 20px; }
+.speak-btn {
+  background: var(--surface-bold); border: none; border-radius: var(--radius-pill);
+  padding: 10px 20px; display: flex; align-items: center; gap: 8px; cursor: pointer;
+}
+.speak-btn:active { opacity: 0.85; }
+.speak-btn svg { width: 18px; height: 18px; }
+.speak-btn span { font-family: 'JioType'; font-weight: 700; font-size: 14px; color: var(--white); line-height: 1; }
+
+/* ============== BREAKING NEWS CARD ============== */
+.breaking-card {
+  border-radius: var(--radius-lg); overflow: hidden;
+  background: var(--white); border: 1px solid rgba(36,38,43,0.12);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+/* Hero section */
+.hero-visual {
+  position: relative; width: 100%; aspect-ratio: 16/10; overflow: hidden;
+  background: linear-gradient(135deg, #0a0f2e 0%, #1a1f4e 40%, #0d2847 100%);
+}
+.hero-stadium {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 120%, rgba(53,53,243,0.3) 0%, transparent 60%),
+    radial-gradient(ellipse at 20% 30%, rgba(247,171,32,0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 20%, rgba(30,204,176,0.1) 0%, transparent 40%);
+}
+.hero-lights {
+  position: absolute; top: 0; left: 0; right: 0; height: 60%;
+  background: radial-gradient(ellipse at 25% 0%, rgba(255,255,255,0.08) 0%, transparent 50%),
+              radial-gradient(ellipse at 75% 0%, rgba(255,255,255,0.08) 0%, transparent 50%);
+}
+
+/* Confetti */
+.confetti-container { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.confetti {
+  position: absolute; width: 8px; height: 8px; opacity: 0;
+  animation: confettiFall 3s ease-in infinite;
+}
+@keyframes confettiFall {
+  0% { opacity: 0; transform: translateY(-20px) rotate(0deg); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(300px) rotate(720deg); }
+}
+
+/* Celebration figures */
+.hero-figures {
+  position: absolute; bottom: 80px; left: 0; right: 0;
+  display: flex; justify-content: center; gap: 12px;
+}
+.hero-figure {
+  width: 36px; height: 56px; border-radius: 18px 18px 6px 6px;
+  position: relative; animation: celebrate 0.6s ease-in-out infinite alternate;
+}
+.hero-figure:nth-child(2) { animation-delay: 0.15s; }
+.hero-figure:nth-child(3) { animation-delay: 0.3s; }
+.hero-figure:nth-child(4) { animation-delay: 0.1s; }
+.hero-figure:nth-child(5) { animation-delay: 0.25s; }
+@keyframes celebrate { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
+.figure-head {
+  width: 18px; height: 18px; border-radius: 50%; position: absolute;
+  top: -4px; left: 50%; transform: translateX(-50%);
+}
+.figure-arm-l, .figure-arm-r {
+  position: absolute; top: 16px; width: 4px; height: 22px;
+  border-radius: var(--radius-pill);
+}
+.figure-arm-l { left: -2px; transform-origin: top center; animation: armWave 0.6s ease-in-out infinite alternate; }
+.figure-arm-r { right: -2px; transform-origin: top center; animation: armWave 0.6s ease-in-out infinite alternate-reverse; }
+@keyframes armWave { 0% { transform: rotate(30deg); } 100% { transform: rotate(-15deg); } }
+
+/* Trophy */
+.hero-trophy {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -58%);
+  font-size: 64px; filter: drop-shadow(0 0 30px rgba(247,171,32,0.5));
+  animation: trophyPulse 2s ease-in-out infinite;
+}
+@keyframes trophyPulse { 0%,100% { transform: translate(-50%,-58%) scale(1); } 50% { transform: translate(-50%,-58%) scale(1.06); } }
+
+/* Overlay */
+.hero-overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  justify-content: flex-end; padding: 16px;
+  background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+}
+.hero-breaking-badge {
+  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+  padding: 3px 10px; border-radius: var(--radius-pill); background: var(--error);
+}
+.breaking-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--white); animation: livePulse 1s infinite; }
+.breaking-text { font-size: 9px; font-weight: 900; color: var(--white); text-transform: uppercase; letter-spacing: 1.5px; }
+
+.hero-headline {
+  font-size: 20px; font-weight: 900; color: var(--white); line-height: 1.15;
+  letter-spacing: -0.5px; margin-top: 6px;
+}
+.hero-headline-gold { color: var(--secondary-40); }
+
+/* Score strip */
+.score-strip {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  padding: 8px 12px; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.score-flag {
+  width: 24px; height: 16px; border-radius: 2px; overflow: hidden;
+  display: flex; flex-direction: column; flex-shrink: 0;
+}
+.flag-ind-top { flex: 1; background: var(--warning); }
+.flag-ind-mid { flex: 1; background: var(--white); display: flex; align-items: center; justify-content: center; }
+.flag-ind-mid-dot { width: 4px; height: 4px; border-radius: 50%; border: 1px solid var(--primary-50); }
+.flag-ind-bot { flex: 1; background: var(--success); }
+.flag-pak { background: var(--success); position: relative; }
+.flag-pak-white { position: absolute; left: 0; top: 0; bottom: 0; width: 30%; background: var(--white); }
+
+.score-team { font-size: 11px; font-weight: 700; color: var(--white); }
+.score-runs { font-size: 11px; font-weight: 900; color: var(--secondary-40); }
+.score-vs { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); }
+.score-result { font-size: 11px; font-weight: 700; color: var(--sparkle-50); margin-left: auto; }
+
+/* Card body */
+.card-body { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+/* Player of the match */
+.potm-card {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+  border-radius: var(--radius-md); background: var(--secondary-20);
+  border: 1px solid rgba(247,171,32,0.15);
+}
+.potm-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-50), var(--surface-bold));
+  display: flex; align-items: center; justify-content: center;
+  color: var(--white); font-size: 15px; font-weight: 900; flex-shrink: 0;
+}
+.potm-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--secondary-50); }
+.potm-name { font-size: 15px; font-weight: 900; color: var(--grey-100); line-height: 1.2; }
+.potm-stats { font-size: 12px; font-weight: 500; color: var(--grey-80); margin-top: 2px; }
+
+/* Verified footer */
+.verified-footer {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 6px 12px; background: var(--grey-20); border-radius: var(--radius-sm);
+}
+.verified-logo {
+  width: 16px; height: 16px; border-radius: var(--radius-xs);
+  background: var(--primary-50); display: flex; align-items: center; justify-content: center;
+}
+.verified-text { font-size: 11px; font-weight: 700; color: var(--grey-80); }
+
+/* Language chips */
+.lang-bar { display: flex; gap: 8px; }
+.lang-chip {
+  padding: 6px 14px; border-radius: var(--radius-pill); border: 1.5px solid var(--grey-40);
+  background: var(--white); font-size: 12px; font-weight: 700; color: var(--grey-100);
+  cursor: pointer; transition: all 0.2s; font-family: 'JioType';
+}
+.lang-chip:active { transform: scale(0.95); }
+.lang-chip.active { background: var(--primary-50); color: var(--white); border-color: var(--primary-50); }
+
+/* Share buttons */
+.share-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.share-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 16px; border-radius: var(--radius-pill);
+  border: none; cursor: pointer; font-family: 'JioType';
+  font-size: 13px; font-weight: 700; transition: all 0.2s;
+}
+.share-btn:active { transform: scale(0.95); }
+.share-btn-wa { background: var(--success); color: var(--white); }
+.share-btn-ig { background: var(--error); color: var(--white); }
+.share-btn-copy { background: var(--surface-ghost); color: var(--grey-100); }
+
+/* Live stats */
+.live-stats {
+  display: flex; gap: 16px; padding: 8px 0;
+}
+.live-stat { display: flex; flex-direction: column; align-items: center; }
+.live-stat-num { font-size: 16px; font-weight: 900; color: var(--grey-100); font-variant-numeric: tabular-nums; }
+.live-stat-label { font-size: 10px; font-weight: 500; color: var(--grey-80); }
+
+/* ============== SHARE SENT BOTTOM SHEET ============== */
+.share-overlay {
+  position: absolute; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.66); display: flex; align-items: flex-end;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.share-overlay.active { opacity: 1; pointer-events: auto; }
+
+.share-sheet {
+  width: 100%; background: var(--white); border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 20px 16px 32px; transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.share-overlay.active .share-sheet { transform: translateY(0); }
+
+.sheet-handle { width: 40px; height: 4px; border-radius: var(--radius-pill); background: var(--grey-40); margin: 0 auto 16px; }
+.sheet-icon-wrap {
+  width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 12px;
+  background: rgba(37,171,33,0.1); display: flex; align-items: center; justify-content: center;
+}
+.sheet-title { font-size: 18px; font-weight: 900; color: var(--grey-100); text-align: center; }
+.sheet-desc { font-size: 13px; font-weight: 500; color: var(--grey-80); text-align: center; margin-top: 4px; line-height: 1.5; }
+
+.sheet-groups { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+.sheet-group {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  border-radius: var(--radius-md); background: var(--grey-20);
+  animation: groupSlide 0.4s ease-out both;
+}
+.sheet-group:nth-child(2) { animation-delay: 0.12s; }
+.sheet-group:nth-child(3) { animation-delay: 0.24s; }
+@keyframes groupSlide { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+.group-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900; color: var(--white); flex-shrink: 0;
+}
+.group-name { font-size: 14px; font-weight: 700; color: var(--grey-100); }
+.group-sent {
+  margin-left: auto; font-size: 11px; font-weight: 700;
+  color: var(--success); display: flex; align-items: center; gap: 4px;
+}
+
+.sheet-done-btn {
+  width: 100%; margin-top: 16px; padding: 14px; border-radius: var(--radius-pill);
+  background: var(--primary-50); color: var(--white); border: none;
+  font-family: 'JioType'; font-size: 16px; font-weight: 700; cursor: pointer;
+}
+.sheet-done-btn:active { opacity: 0.85; }
+
+/* ============== SKELETON ============== */
+.skeleton-card { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid rgba(36,38,43,0.12); }
+.skel-block {
+  background: linear-gradient(90deg, var(--grey-20) 25%, var(--grey-40) 50%, var(--grey-20) 75%);
+  background-size: 200% 100%; animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ============== TOAST ============== */
+.jds-toast {
+  position: fixed; bottom: 80px; left: 16px; right: 16px; max-width: 420px; margin: 0 auto;
+  padding: 12px 16px; border-radius: var(--radius-md);
+  background: var(--grey-100); color: var(--white);
+  font-size: 14px; font-weight: 700; z-index: 300;
+  display: flex; align-items: center; gap: 8px;
+  transform: translateY(100px); opacity: 0;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.jds-toast.show { transform: translateY(0); opacity: 1; }
+
+/* ============== ANIMATIONS ============== */
+@keyframes msgIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: msgIn 0.4s ease-out; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- App Header (same as daily news) -->
+  <div class="app-header">
+    <div class="app-header-avatar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2a1 1 0 00-1 1v18a1 1 0 002 0V3a1 1 0 00-1-1zM4 9a1 1 0 00-1 1v4a1 1 0 102 0v-4a1 1 0 00-1-1zm4-3a1 1 0 00-1 1v10a1 1 0 102 0V7a1 1 0 00-1-1zm12 3a1 1 0 00-1 1v4a1 1 0 002 0v-4a1 1 0 00-1-1zm-4-3a1 1 0 00-1 1v10a1 1 0 002 0V7a1 1 0 00-1-1z"/></svg>
+    </div>
+    <div class="app-header-info">
+      <h3>JioBharatIQ</h3>
+      <span id="headerStatus">Online</span>
+    </div>
+  </div>
+
+  <!-- In-app notification banner -->
+  <div class="notif-banner" id="notifBanner" onclick="openBreakingCard()">
+    <div class="notif-banner-header">
+      <div class="notif-banner-icon">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+      </div>
+      <div class="notif-banner-app">BREAKING NEWS</div>
+      <div class="notif-banner-live"><div class="notif-live-dot"></div> LIVE</div>
+      <div class="notif-banner-time">just now</div>
+    </div>
+    <div class="notif-banner-title">INDIA WINS CHAMPIONS TROPHY 2025!</div>
+    <div class="notif-banner-body">India 287/6 beat Pakistan 241 all out by 46 runs. Bumrah 4/32.</div>
+    <div class="notif-banner-action">
+      Tap to see & share the victory card
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--primary-50)"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+    </div>
+  </div>
+
+  <!-- Chat area -->
+  <div class="chat-body">
+    <div class="chat-area" id="chatArea"></div>
+    <div class="input-widget">
+      <div class="input-field-wrap">
+        <div class="input-text-area">
+          <input type="text" id="inputField" placeholder="Ask about this news..." readonly>
+        </div>
+        <div class="input-actions">
+          <div class="input-left-actions">
+            <button class="input-icon-btn">
+              <svg viewBox="0 0 24 24" fill="#170054"><path d="M20 11h-7V4a1 1 0 00-2 0v7H4a1 1 0 000 2h7v7a1 1 0 002 0v-7h7a1 1 0 000-2z"/></svg>
+            </button>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="input-icon-btn">
+              <svg viewBox="0 0 24 24" fill="#170054"><path d="M12 15a3 3 0 003-3V5a3 3 0 00-6 0v7a3 3 0 003 3zm6-5a1 1 0 00-1 1v1a5 5 0 11-10 0v-1a1 1 0 10-2 0v1a7 7 0 1014 0v-1a1 1 0 00-1-1zm-3 10H9a1 1 0 000 2h6a1 1 0 000-2z"/></svg>
+            </button>
+            <button class="speak-btn">
+              <svg viewBox="0 0 24 24" fill="white"><path d="M12 15a3 3 0 003-3V5a3 3 0 00-6 0v7a3 3 0 003 3zm6-5a1 1 0 00-1 1v1a5 5 0 11-10 0v-1a1 1 0 10-2 0v1a7 7 0 1014 0v-1a1 1 0 00-1-1z"/></svg>
+              <span>Speak</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share sent bottom sheet -->
+  <div class="share-overlay" id="shareOverlay">
+    <div class="share-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--success)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+      </div>
+      <div class="sheet-title" id="sheetTitle">Shared to 3 groups!</div>
+      <div class="sheet-desc" id="sheetDesc">Your victory card is on its way. Image + caption generated automatically.</div>
+      <div class="sheet-groups">
+        <div class="sheet-group">
+          <div class="group-avatar" style="background:var(--success)">F</div>
+          <div class="group-name">Family Group</div>
+          <div class="group-sent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--success)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            Sent
+          </div>
+        </div>
+        <div class="sheet-group">
+          <div class="group-avatar" style="background:var(--primary-50)">C</div>
+          <div class="group-name">Cricket Lovers</div>
+          <div class="group-sent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--success)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            Sent
+          </div>
+        </div>
+        <div class="sheet-group">
+          <div class="group-avatar" style="background:var(--secondary-50)">O</div>
+          <div class="group-name">Office Friends</div>
+          <div class="group-sent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--success)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            Sent
+          </div>
+        </div>
+      </div>
+      <button class="sheet-done-btn" onclick="closeShareSheet()">Done</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="jds-toast" id="toast"></div>
+</div>
+
+<script>
+// ============== ELEVENLABS TTS ==============
+const ELEVENLABS_API_KEY = 'sk_86a2daf2318ba84afa5190ff9a2c09fcc9e7f9dafea1fe79';
+const VOICES = {
+  en: { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam' },
+  hi: { id: 'zT03pEAEi0VHKciJODfn', name: 'Raju' },
+  ta: { id: 'pNInz6obpgDQGcFmaJgB', name: 'Adam' }
+};
+const ttsCache = new Map();
+let currentAudio = null;
+
+async function speakText(text, lang) {
+  const voiceId = VOICES[lang]?.id || VOICES.en.id;
+  const cacheKey = text + '|' + voiceId;
+  if (ttsCache.has(cacheKey)) { playAudio(ttsCache.get(cacheKey)); return; }
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: { 'xi-api-key': ELEVENLABS_API_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text, model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.55, similarity_boost: 0.85, style: 0.5, use_speaker_boost: true }
+      })
+    });
+    if (!res.ok) throw new Error('API ' + res.status);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    ttsCache.set(cacheKey, url);
+    playAudio(url);
+  } catch(e) { console.warn('TTS failed:', e); }
+}
+
+function playAudio(url) {
+  if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+  currentAudio = new Audio(url);
+  currentAudio.play().catch(() => {});
+}
+
+// ============== HELPERS ==============
+const chatArea = document.getElementById('chatArea');
+function scrollToBottom() { setTimeout(() => { chatArea.scrollTop = chatArea.scrollHeight; }, 60); }
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function addMsg(html, delay) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.className = 'msg msg-ai fade-in';
+      div.innerHTML = `<div class="bubble bubble-ai">${html}</div>`;
+      chatArea.appendChild(div); scrollToBottom(); resolve();
+    }, delay || 0);
+  });
+}
+
+function addRaw(html, fullWidth) {
+  const div = document.createElement('div');
+  div.className = `msg msg-ai fade-in${fullWidth ? ' msg-full' : ''}`;
+  div.innerHTML = html;
+  chatArea.appendChild(div); scrollToBottom();
+  return div;
+}
+
+// ============== CONFETTI ==============
+function spawnConfetti(container) {
+  const colors = ['#ffd947','#1eccb0','#9999ff','#fa2f40','#ffffff'];
+  for (let i = 0; i < 35; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100+'%';
+    c.style.animationDelay = Math.random()*3+'s';
+    c.style.animationDuration = (2+Math.random()*2)+'s';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.borderRadius = Math.random()>0.5 ? '50%' : '2px';
+    c.style.width = (3+Math.random()*7)+'px';
+    c.style.height = (3+Math.random()*7)+'px';
+    container.appendChild(c);
+  }
+}
+
+// ============== LANGUAGE DATA ==============
+const langData = {
+  en: {
+    headline: '<span class="hero-headline-gold">INDIA WINS</span><br>CHAMPIONS TROPHY 2025!',
+    team1: 'INDIA', runs1: '287/6', team2: 'PAKISTAN', runs2: '241 all out',
+    result: 'Won by 46 runs',
+    potmLabel: 'Player of the Match', potmStats: '4/32 (10 overs) | Econ: 3.20',
+    shareLabel: 'Share this card',
+    celebVoice: 'What a spectacular victory! India wins the Champions Trophy 2025, beating Pakistan by 46 runs! Jasprit Bumrah is the Player of the Match with incredible figures of 4 wickets for 32 runs! Incredible scenes at the stadium!'
+  },
+  hi: {
+    headline: '<span class="hero-headline-gold">भारत ने जीता</span><br>चैंपियंस ट्रॉफी 2025!',
+    team1: 'भारत', runs1: '287/6', team2: 'पाकिस्तान', runs2: '241 ऑल आउट',
+    result: '46 रनों से जीत',
+    potmLabel: 'मैन ऑफ द मैच', potmStats: '4/32 (10 ओवर) | इकॉनमी: 3.20',
+    shareLabel: 'यह कार्ड शेयर करें',
+    celebVoice: 'क्या शानदार जीत है! भारत ने चैंपियंस ट्रॉफी 2025 जीत ली, पाकिस्तान को 46 रनों से हराया! जसप्रीत बुमराह 4 विकेट लेकर मैन ऑफ द मैच बने! स्टेडियम में जश्न का माहौल!'
+  },
+  ta: {
+    headline: '<span class="hero-headline-gold">இந்தியா வென்றது</span><br>சாம்பியன்ஸ் டிராபி 2025!',
+    team1: 'இந்தியா', runs1: '287/6', team2: 'பாகிஸ்தான்', runs2: '241 ஆல் அவுட்',
+    result: '46 ரன்கள் வெற்றி',
+    potmLabel: 'ஆட்டநாயகன்', potmStats: '4/32 (10 ஓவர்கள்) | எகானமி: 3.20',
+    shareLabel: 'இந்த கார்டை பகிரவும்',
+    celebVoice: 'What an incredible victory! India wins the Champions Trophy 2025 by beating Pakistan by 46 runs! Bumrah takes 4 wickets!'
+  }
+};
+
+let currentLang = 'en';
+let cardRendered = false;
+
+function switchLang(lang) {
+  currentLang = lang;
+  const d = langData[lang];
+  document.querySelectorAll('.lang-chip').forEach(c => c.classList.toggle('active', c.dataset.lang === lang));
+  const headline = document.getElementById('cardHeadline');
+  if (headline) headline.innerHTML = d.headline;
+  const t1 = document.getElementById('sTeam1'); if (t1) t1.textContent = d.team1;
+  const r1 = document.getElementById('sRuns1'); if (r1) r1.textContent = d.runs1;
+  const t2 = document.getElementById('sTeam2'); if (t2) t2.textContent = d.team2;
+  const r2 = document.getElementById('sRuns2'); if (r2) r2.textContent = d.runs2;
+  const rs = document.getElementById('sResult'); if (rs) rs.textContent = d.result;
+  const pl = document.getElementById('potmLabel'); if (pl) pl.textContent = d.potmLabel;
+  const ps = document.getElementById('potmStats'); if (ps) ps.textContent = d.potmStats;
+  speakText(d.celebVoice, lang);
+}
+
+// ============== LIVE SHARE COUNTER ==============
+let shareCount = 2400;
+let viewCount = 18000;
+let secondsAgo = 58;
+
+function startLiveCounter() {
+  setInterval(() => {
+    shareCount += Math.floor(Math.random() * 12) + 3;
+    viewCount += Math.floor(Math.random() * 60) + 20;
+    secondsAgo++;
+    const s = document.getElementById('liveShares');
+    const v = document.getElementById('liveViews');
+    const t = document.getElementById('liveTime');
+    if (s) s.textContent = (shareCount/1000).toFixed(1) + 'K';
+    if (v) v.textContent = (viewCount/1000).toFixed(1) + 'K';
+    if (t) t.textContent = secondsAgo < 60 ? secondsAgo+'s' : Math.floor(secondsAgo/60)+'m';
+  }, 2000);
+}
+
+// ============== MAIN FLOW ==============
+let notifShown = false;
+
+async function startFlow() {
+  // Initial greeting message
+  await addMsg('Welcome back, Ananya! Your morning briefing was delivered at 7:15 AM.', 0);
+  await wait(500);
+  await addMsg('Champions Trophy Final is LIVE &mdash; India vs Pakistan. Stay tuned for updates.', 300);
+
+  // Wait then show notification
+  await wait(2500);
+  showNotification();
+}
+
+function showNotification() {
+  if (notifShown) return;
+  notifShown = true;
+  document.getElementById('headerStatus').textContent = 'Breaking News';
+  document.getElementById('headerStatus').style.color = 'var(--error)';
+  document.getElementById('notifBanner').classList.add('visible');
+}
+
+async function openBreakingCard() {
+  // Hide notification
+  const banner = document.getElementById('notifBanner');
+  banner.style.transition = 'transform 0.3s, opacity 0.2s';
+  banner.classList.remove('visible');
+  document.getElementById('headerStatus').textContent = 'Online';
+  document.getElementById('headerStatus').style.color = '';
+
+  if (cardRendered) return;
+  cardRendered = true;
+
+  // Show skeleton first
+  const skelDiv = addRaw(`
+    <div class="skeleton-card">
+      <div class="skel-block" style="width:100%;height:200px;"></div>
+      <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+        <div class="skel-block" style="width:75%;height:20px;border-radius:var(--radius-sm)"></div>
+        <div class="skel-block" style="width:55%;height:14px;border-radius:var(--radius-sm)"></div>
+        <div class="skel-block" style="width:100%;height:52px;border-radius:var(--radius-md)"></div>
+      </div>
+    </div>
+  `, true);
+
+  await wait(1500);
+
+  // Replace skeleton with real card
+  skelDiv.remove();
+
+  const figureColors = ['#1a5276','#154360','#1a5276','#1b4f72','#154360'];
+  const skinTones = ['#d4a373','#c8a87c','#d4a373','#c8a87c','#d4a373'];
+  const figures = figureColors.map((c,i) => `
+    <div class="hero-figure" style="background:linear-gradient(180deg, ${c} 60%, #ffffff 60%)">
+      <div class="figure-head" style="background:${skinTones[i]}"></div>
+      <div class="figure-arm-l" style="background:${c}"></div>
+      <div class="figure-arm-r" style="background:${c}"></div>
+    </div>`).join('');
+
+  const cardHtml = `
+    <div class="breaking-card">
+      <div class="hero-visual">
+        <div class="hero-stadium"></div>
+        <div class="hero-lights"></div>
+        <div class="confetti-container" id="confettiBox"></div>
+        <div class="hero-figures">${figures}</div>
+        <div class="hero-trophy">&#127942;</div>
+        <div class="hero-overlay">
+          <div class="hero-breaking-badge">
+            <div class="breaking-dot"></div>
+            <div class="breaking-text">Breaking</div>
+          </div>
+          <div class="hero-headline" id="cardHeadline">
+            <span class="hero-headline-gold">INDIA WINS</span><br>CHAMPIONS TROPHY 2025!
+          </div>
+          <div class="score-strip">
+            <div class="score-flag"><div class="flag-ind-top"></div><div class="flag-ind-mid"><div class="flag-ind-mid-dot"></div></div><div class="flag-ind-bot"></div></div>
+            <div><div class="score-team" id="sTeam1">INDIA</div><div class="score-runs" id="sRuns1">287/6</div></div>
+            <div class="score-vs">vs</div>
+            <div class="score-flag"><div class="flag-pak" style="width:24px;height:16px;border-radius:2px;overflow:hidden;position:relative;background:var(--success)"><div class="flag-pak-white"></div></div></div>
+            <div><div class="score-team" id="sTeam2">PAKISTAN</div><div class="score-runs" id="sRuns2">241 all out</div></div>
+            <div class="score-result" id="sResult">Won by 46 runs</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="potm-card">
+          <div class="potm-avatar">JB</div>
+          <div>
+            <div class="potm-label" id="potmLabel">Player of the Match</div>
+            <div class="potm-name">Jasprit Bumrah</div>
+            <div class="potm-stats" id="potmStats">4/32 (10 overs) | Econ: 3.20</div>
+          </div>
+        </div>
+        <div class="verified-footer">
+          <div class="verified-logo"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M12 2a1 1 0 00-1 1v18a1 1 0 002 0V3a1 1 0 00-1-1z"/></svg></div>
+          <div class="verified-text">JioBharatIQ</div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--primary-50)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <div class="verified-text">Verified News</div>
+        </div>
+        <div class="lang-bar">
+          <button class="lang-chip active" data-lang="en" onclick="switchLang('en')">English</button>
+          <button class="lang-chip" data-lang="hi" onclick="switchLang('hi')">हिन्दी</button>
+          <button class="lang-chip" data-lang="ta" onclick="switchLang('ta')">தமிழ்</button>
+        </div>
+        <div class="share-row">
+          <button class="share-btn share-btn-wa" onclick="shareWhatsApp()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </button>
+          <button class="share-btn share-btn-ig" onclick="shareIG()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Story
+          </button>
+          <button class="share-btn share-btn-copy" onclick="copyCard()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="live-stats">
+          <div class="live-stat"><div class="live-stat-num" id="liveShares">2.4K</div><div class="live-stat-label">Shares</div></div>
+          <div class="live-stat"><div class="live-stat-num" id="liveViews">18.0K</div><div class="live-stat-label">Views</div></div>
+          <div class="live-stat"><div class="live-stat-num">12</div><div class="live-stat-label">Languages</div></div>
+          <div class="live-stat"><div class="live-stat-num" id="liveTime">58s</div><div class="live-stat-label">ago</div></div>
+        </div>
+      </div>
+    </div>`;
+
+  addRaw(cardHtml, true);
+
+  // Spawn confetti
+  setTimeout(() => {
+    const box = document.getElementById('confettiBox');
+    if (box) spawnConfetti(box);
+  }, 100);
+
+  // Play celebration voice
+  speakText(langData.en.celebVoice, 'en');
+  startLiveCounter();
+}
+
+// ============== SHARE ACTIONS ==============
+function shareWhatsApp() {
+  document.getElementById('shareOverlay').classList.add('active');
+}
+function shareIG() { showToast('Added to Instagram Story!'); }
+function copyCard() { showToast('Card copied to clipboard!'); }
+function closeShareSheet() { document.getElementById('shareOverlay').classList.remove('active'); }
+
+document.getElementById('shareOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeShareSheet();
+});
+
+// ============== TOAST ==============
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="var(--sparkle-50)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> ${msg}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============== START ==============
+startFlow();
+</script>
+</body>
+</html>
