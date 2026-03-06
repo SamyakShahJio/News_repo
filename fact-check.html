@@ -266,6 +266,7 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
   width: 100%; background: var(--white); border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   padding: 20px 16px 32px; transform: translateY(100%);
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  max-height: 92vh; overflow-y: auto;
 }
 .share-overlay.active .share-sheet { transform: translateY(0); }
 
@@ -273,12 +274,7 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
 .sheet-title { font-size: 18px; font-weight: 900; color: var(--grey-100); }
 .sheet-desc { font-size: 13px; font-weight: 500; color: var(--grey-80); margin-top: 4px; line-height: 1.5; }
 
-.correction-preview {
-  margin-top: 14px; padding: 12px 14px; border-radius: var(--radius-md);
-  background: var(--grey-20); border-left: 3px solid var(--sparkle-50);
-}
-.correction-preview-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--sparkle-50); margin-bottom: 6px; }
-.correction-preview-text { font-size: 13px; line-height: 1.5; color: var(--grey-100); }
+/* correction-preview replaced by share-image card */
 
 .sheet-groups { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
 .sheet-group {
@@ -383,6 +379,84 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
 .summary-stat-num { font-size: 22px; font-weight: 900; }
 .summary-stat-label { font-size: 11px; font-weight: 500; color: var(--grey-80); }
 
+/* ============== SHAREABLE IMAGE CARD ============== */
+.share-image {
+  border-radius: var(--radius-lg); overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12); margin-top: 14px;
+}
+.share-img-header {
+  background: linear-gradient(135deg, var(--error) 0%, #8b0016 100%);
+  padding: 18px 20px 16px; text-align: center; position: relative;
+}
+.share-img-alert-tag {
+  display: inline-block; background: rgba(255,255,255,0.18); border-radius: var(--radius-pill);
+  padding: 3px 12px; font-size: 9px; font-weight: 900; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--white); margin-bottom: 10px;
+}
+.share-img-shield {
+  width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center; margin: 0 auto 8px;
+}
+.share-img-verdict { font-size: 28px; font-weight: 900; color: var(--white); letter-spacing: -0.5px; }
+.share-img-verdict-sub { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+.share-img-body { padding: 16px 18px; background: var(--white); }
+.share-img-claim {
+  background: #fff5f5; border: 1px solid rgba(250,47,64,0.15);
+  border-radius: var(--radius-md); padding: 12px 14px 12px 18px;
+  font-size: 13px; line-height: 1.55; color: var(--grey-100);
+  position: relative; margin-bottom: 14px;
+}
+.share-img-claim::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: var(--error); border-radius: var(--radius-xs) 0 0 var(--radius-xs);
+}
+.share-img-claim-label {
+  font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--error); margin-bottom: 4px;
+}
+
+.share-img-reality { margin-bottom: 14px; }
+.share-img-reality-divider {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+.share-img-reality-divider::before, .share-img-reality-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--grey-40);
+}
+.share-img-reality-divider span {
+  font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--success); white-space: nowrap;
+}
+.share-img-reality-text { font-size: 13px; line-height: 1.55; color: var(--grey-100); }
+
+.share-img-sources { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.share-img-source-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  background: var(--sparkle-20); font-size: 10px; font-weight: 700; color: var(--sparkle-50);
+}
+.share-img-first-seen {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  background: rgba(240,109,15,0.1); font-size: 10px; font-weight: 700; color: var(--warning);
+}
+
+.share-img-footer {
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-60) 100%);
+  padding: 10px 18px; display: flex; align-items: center; justify-content: space-between;
+}
+.share-img-brand { display: flex; align-items: center; gap: 8px; }
+.share-img-brand-icon {
+  width: 24px; height: 24px; background: rgba(255,255,255,0.2);
+  border-radius: var(--radius-xs); display: flex; align-items: center; justify-content: center;
+}
+.share-img-brand-name { font-size: 11px; font-weight: 900; color: var(--white); }
+.share-img-brand-sub { font-size: 9px; color: rgba(255,255,255,0.65); }
+.share-img-tagline {
+  font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.8);
+  text-align: right; line-height: 1.3;
+}
+
 /* ============== ANIMATIONS ============== */
 @keyframes msgIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes typingAnim { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
@@ -461,14 +535,52 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
     <div class="share-sheet">
       <div class="sheet-handle"></div>
       <div class="sheet-title" id="sheetTitle">Correction bhejein</div>
-      <div class="sheet-desc" id="sheetDesc">Yeh ready-made correction message apne groups mein bhejein:</div>
+      <div class="sheet-desc" id="sheetDesc">Yeh shareable card apne groups mein bhejein &mdash; sabko sach pata chalega:</div>
 
-      <div class="correction-preview">
-        <div class="correction-preview-label">Preview</div>
-        <div class="correction-preview-text">
-          <strong>Verified by JioBharatIQ</strong><br><br>
-          Jo &#8377;2000 note band hone wala message aaya tha, woh <strong>GALAT</strong> hai. RBI ne aisa kuch nahi kaha. Fake message hai &mdash; aage mat bhejo.<br><br>
-          Source: PIB Fact Check, Vishvas News
+      <div class="share-image">
+        <div class="share-img-header">
+          <div class="share-img-alert-tag">Fake News Alert</div>
+          <div class="share-img-shield">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+          </div>
+          <div class="share-img-verdict">FALSE</div>
+          <div class="share-img-verdict-sub">Verified &bull; Fact-Check Shield</div>
+        </div>
+        <div class="share-img-body">
+          <div class="share-img-claim">
+            <div class="share-img-claim-label">Fake Claim</div>
+            "RBI ne naya rule nikala &mdash; 1 January se &#8377;2000 ke note band honge. Jaldi bank jaao!"
+          </div>
+          <div class="share-img-reality">
+            <div class="share-img-reality-divider"><span>Sachai</span></div>
+            <div class="share-img-reality-text">RBI ne aisa koi notification jaari nahi kiya hai. &#8377;2000 ke note band hone ki koi official announcement nahi hui hai.</div>
+          </div>
+          <div class="share-img-sources">
+            <span class="share-img-source-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--sparkle-50)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              Vishvas News
+            </span>
+            <span class="share-img-source-badge">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--sparkle-50)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+              PIB Fact Check
+            </span>
+          </div>
+          <div class="share-img-first-seen">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="var(--warning)"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            Pehli baar viral: October 2023
+          </div>
+        </div>
+        <div class="share-img-footer">
+          <div class="share-img-brand">
+            <div class="share-img-brand-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+            </div>
+            <div>
+              <div class="share-img-brand-name">JioBharatIQ</div>
+              <div class="share-img-brand-sub">Fact-Check Shield</div>
+            </div>
+          </div>
+          <div class="share-img-tagline">Pehle Verify,<br>Phir Share</div>
         </div>
       </div>
 
@@ -641,32 +753,36 @@ function showInputMethods() {
         <span class="method-tag" style="background:var(--primary-20);color:var(--primary-50)">Recommended</span>
       </div>
     </div>
-    <div class="method-card" onclick="selectMethod('screenshot')">
+    <div class="method-card method-card-disabled">
       <div class="method-icon" style="background:var(--secondary-50)">${imgIcon}</div>
       <div>
         <h4>Screenshot Paste</h4>
         <p>Instagram, Facebook, Telegram ka screenshot upload karein</p>
+        <span class="method-tag" style="background:var(--grey-20);color:var(--grey-60)">Coming Soon</span>
       </div>
     </div>
-    <div class="method-card" onclick="selectMethod('voice')">
+    <div class="method-card method-card-disabled">
       <div class="method-icon" style="background:var(--primary-50)">${micIcon}</div>
       <div>
         <h4>Voice Describe</h4>
         <p>Bol kar batayein kya verify karna hai</p>
+        <span class="method-tag" style="background:var(--grey-20);color:var(--grey-60)">Coming Soon</span>
       </div>
     </div>
-    <div class="method-card" onclick="selectMethod('link')">
+    <div class="method-card method-card-disabled">
       <div class="method-icon" style="background:var(--sparkle-50)">${linkIcon}</div>
       <div>
         <h4>Link Paste</h4>
         <p>Kisi bhi browser/app se URL copy kar ke paste karein</p>
+        <span class="method-tag" style="background:var(--grey-20);color:var(--grey-60)">Coming Soon</span>
       </div>
     </div>
-    <div class="method-card" onclick="selectMethod('scanner')">
+    <div class="method-card method-card-disabled">
       <div class="method-icon" style="background:var(--warning)">${scanIcon}</div>
       <div>
         <h4>In-App Scanner</h4>
         <p>Akhbaar, TV, ya pamphlet ki photo se verify karein</p>
+        <span class="method-tag" style="background:var(--grey-20);color:var(--grey-60)">Coming Soon</span>
       </div>
     </div>
   `, false);
@@ -709,42 +825,9 @@ async function selectMethod(method) {
     await wait(500);
     startVerification();
 
-  } else if (method === 'voice') {
-    await addMsg('user', 'Voice se verify karunga');
-    await wait(300);
-    openVoiceInput();
-
   } else {
-    // For screenshot, link, scanner - show coming soon, then default to WhatsApp demo
-    const labels = { screenshot: 'Screenshot', link: 'Link Paste', scanner: 'Scanner' };
-    await addMsg('user', labels[method] + ' se verify karunga');
-    await wait(300);
-    showTyping(); await wait(500); hideTyping();
-    await addMsg('ai', 'Yeh feature jaldi aa raha hai! Abhi WhatsApp forward se demo dekhiye.');
-    await wait(600);
-
-    await addMsg('user', 'Ok, yeh message aaya hai:');
-    await wait(300);
-    addRaw(`
-      <div class="fwd-card">
-        <div class="fwd-header">
-          <div class="fwd-fwd-icon">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--grey-60)"><path d="M12 8V4l8 8-8 8v-4H4V8z"/></svg>
-            Forwarded
-          </div>
-        </div>
-        <div class="fwd-body">
-          <strong>BREAKING:</strong> RBI ne naya rule nikala &mdash; 1 January se &#8377;2000 ke note band honge. Jaldi bank jaao!<br><br>
-          Yeh confirmed news hai, sabko batao. Sab apne &#8377;2000 ke note bank mein jama kara dein warna raddi ho jaayenge!!
-        </div>
-        <div class="fwd-meta">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="var(--grey-60)"><path d="M12 8V4l8 8-8 8v-4H4V8z"/></svg>
-          Forwarded many times
-        </div>
-      </div>
-    `, false);
-    await wait(500);
-    startVerification();
+    // Other methods are disabled (Coming Soon)
+    return;
   }
 }
 
@@ -968,7 +1051,7 @@ function openCorrectionSheet() {
   document.getElementById('sheetSendBtn').disabled = true;
   document.getElementById('sheetSendBtn').innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> Correction bhejein';
   document.getElementById('sheetTitle').textContent = 'Correction bhejein';
-  document.getElementById('sheetDesc').textContent = 'Yeh ready-made correction message apne groups mein bhejein:';
+  document.getElementById('sheetDesc').textContent = 'Yeh shareable card apne groups mein bhejein — sabko sach pata chalega:';
   document.getElementById('shareOverlay').classList.add('active');
 }
 

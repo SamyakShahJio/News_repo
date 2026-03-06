@@ -12,6 +12,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8081", "-d", "/Users/samyak.shah/Documents/News_repo"],
       "port": 8081
+    },
+    {
+      "name": "market-pulse",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8082", "-d", "/Users/samyak.shah/Documents/News_repo"],
+      "port": 8082
     }
   ]
 }
