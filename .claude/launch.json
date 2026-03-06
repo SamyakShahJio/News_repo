@@ -6,6 +6,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8080", "-d", "/Users/samyak.shah/Documents/News_repo"],
       "port": 8080
+    },
+    {
+      "name": "fact-check",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8081", "-d", "/Users/samyak.shah/Documents/News_repo"],
+      "port": 8081
     }
   ]
 }
