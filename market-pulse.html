@@ -342,6 +342,11 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
   background: var(--white); transition: all 0.2s; font-family: 'JioType', sans-serif;
 }
 .chip:hover, .chip:active { background: var(--primary-50); color: var(--white); }
+.chip:hover .chip-desc, .chip:active .chip-desc { color: rgba(255,255,255,0.85); }
+.chip-rich {
+  padding: 10px 16px; border-radius: 16px; text-align: left; display: flex; flex-direction: column; gap: 2px;
+}
+.chip-desc { font-weight: 400; font-size: 11px; color: var(--grey-80); line-height: 1.3; transition: color 0.2s; }
 .chip-disabled { opacity: 0.38; pointer-events: none; border-color: var(--grey-60); color: var(--grey-60); }
 
 /* Input widget */
@@ -622,10 +627,10 @@ async function goToState(state) {
       await addMsg('ai', 'Aaj aapke liye kya dekhein?');
       await addRaw(`
         <div class="chips">
-          <div class="chip" onclick="goToState('time_machine')">Time Machine</div>
-          <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
-          <div class="chip" onclick="goToState('challenge')">100 ka Challenge</div>
-          <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
+          <div class="chip chip-rich" onclick="goToState('time_machine')">Time Machine<span class="chip-desc">Agar pehle invest kiya hota toh?</span></div>
+          <div class="chip chip-rich" onclick="goToState('portfolio')">Mera Portfolio<span class="chip-desc">Apne 4 stocks ka haal dekho</span></div>
+          <div class="chip chip-rich" onclick="goToState('challenge')">₹100 ka Challenge<span class="chip-desc">Chhoti rakam, bada seekh</span></div>
+          <div class="chip chip-rich" onclick="goToState('chai_pe_charcha')">Chai pe Charcha<span class="chip-desc">2 min mein aaj ka market suno</span></div>
         </div>
       `, 200);
       break;
