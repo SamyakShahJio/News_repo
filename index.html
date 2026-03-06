@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>AI News Anchor \u2014 JioBharatIQ</title>
+<!-- jbiq:v3.5.6 -->
+<style>
+@font-face{font-family:'JioType';font-weight:400;src:url('https://raw.githubusercontent.com/sunit1986/JioBharatIQ_Server/main/assets/fonts/woff2/JioTypeVarW05-Regular.woff2') format('woff2')}
+@font-face{font-family:'JioType';font-weight:500;src:url('https://raw.githubusercontent.com/sunit1986/JioBharatIQ_Server/main/assets/fonts/woff2/JioTypeW05-Medium.woff2') format('woff2')}
+@font-face{font-family:'JioType';font-weight:700;src:url('https://raw.githubusercontent.com/sunit1986/JioBharatIQ_Server/main/assets/fonts/woff2/JioTypeW05-Bold.woff2') format('woff2')}
+@font-face{font-family:'JioType';font-weight:900;src:url('https://raw.githubusercontent.com/sunit1986/JioBharatIQ_Server/main/assets/fonts/woff2/JioTypeW05-Black.woff2') format('woff2')}
+
+:root{
+  --surface:#fff;--surface-ghost:#eeeeef;--surface-ghost-icon:#e7e9ff;--surface-bold:#3900ad;
+  --text-high:#141414;--text-medium:#191b1e;--text-low:rgba(25,27,30,.65);
+  --icon-medium:#170054;--stroke-subtle:rgba(36,38,43,.12);
+  --primary-50:#3535f3;--primary-20:#e8e8fc;
+  --grey-100:#141414;--grey-20:#f5f5f5;--grey-40:#e0e0e0;--grey-60:#b5b5b5;
+  --error:#fa2f40;--secondary:#f7ab20;--sparkle:#1eccb0;--success:#25ab21;
+  --shape-pill:999px;--shape-4xl:24px;--shape-l:16px;--shape-s:8px;
+  --font:'JioType',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--surface);color:var(--text-high);display:flex;flex-direction:column}
+::-webkit-scrollbar{display:none}
+a{text-decoration:none;color:inherit}
+
+/* Hero banner */
+.hero-banner{
+  position:relative;width:100%;height:137px;overflow:hidden;flex-shrink:0;
+  background:linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+.hero-banner-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(250,47,64,0.15) 0%, rgba(53,53,243,0.2) 100%);
+}
+.hero-wave-bars{
+  position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
+  display:flex;gap:3px;align-items:flex-end;height:40px;
+}
+.hero-wave-bar{
+  width:3px;border-radius:99px;background:rgba(255,255,255,0.4);
+  animation:heroWave 1.2s ease-in-out infinite;
+}
+@keyframes heroWave{0%,100%{height:6px;opacity:0.3}50%{height:28px;opacity:0.8}}
+.back-btn{
+  position:absolute;top:16px;left:12px;z-index:5;
+  width:40px;height:40px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.15);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.back-btn:active{background:rgba(255,255,255,.3)}
+.back-btn svg{width:20px;height:20px;color:#fff}
+
+/* Avatar section */
+.avatar-section{
+  display:flex;flex-direction:column;align-items:center;
+  margin-top:-56px;position:relative;z-index:3;
+}
+.avatar-ring{
+  width:120px;height:120px;border-radius:50%;
+  border:3px solid var(--primary-20);background:var(--surface);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.avatar-inner{
+  width:100%;height:100%;border-radius:50%;
+  background:linear-gradient(135deg, var(--error), #c0392b);
+  display:flex;align-items:center;justify-content:center;
+}
+.avatar-name{
+  font-size:24px;font-weight:700;line-height:1.3;letter-spacing:-.72px;
+  color:#000;text-align:center;margin-top:8px;
+}
+.avatar-sub{
+  font-size:13px;color:var(--text-low);text-align:center;margin-top:2px;
+}
+
+/* Body scroll */
+.body-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:120px}
+
+/* Section */
+.section-block{padding:0 16px;margin-top:24px}
+.section-title{font-size:16px;font-weight:700;line-height:1.1;color:var(--grey-100);margin-bottom:12px}
+
+/* Feature cards */
+.feature-card{
+  display:flex;align-items:center;gap:14px;
+  padding:16px;border-radius:16px;background:var(--surface);
+  border:1.5px solid var(--grey-40);cursor:pointer;
+  transition:all .15s;margin-bottom:10px;
+}
+.feature-card:active{border-color:var(--primary-50);background:var(--primary-20)}
+.feature-icon{
+  width:48px;height:48px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.feature-card h4{font-size:15px;font-weight:700;color:var(--text-high);line-height:1.3}
+.feature-card p{font-size:12px;color:var(--text-low);margin-top:2px;line-height:1.4}
+.feature-badge{
+  display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:0.5px;padding:2px 8px;border-radius:var(--shape-pill);margin-top:4px;
+}
+
+/* Stat cards */
+.stats-row{display:flex;gap:10px;margin-top:16px}
+.stat-card{
+  flex:1;background:var(--grey-20);border-radius:12px;padding:14px;text-align:center;
+}
+.stat-num{font-size:22px;font-weight:900;color:var(--primary-50)}
+.stat-label{font-size:11px;color:var(--text-low);margin-top:2px;font-weight:500}
+
+/* Explore chips */
+.chips-grid{display:flex;flex-direction:column;gap:10px}
+.chips-row{display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto}
+.explore-chip{
+  flex-shrink:0;display:flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:40px;
+  background:var(--grey-20);cursor:pointer;white-space:nowrap;
+  transition:all .15s;border:none;font-family:var(--font);font-size:14px;
+  color:var(--text-high);
+}
+.explore-chip:active{background:var(--primary-20);color:var(--primary-50)}
+.explore-chip svg{width:18px;height:18px;flex-shrink:0}
+.explore-chip-disabled{opacity:0.38;pointer-events:none}
+
+/* Multi-modal input */
+.input-widget{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  padding:2px 12px 16px;
+  background:linear-gradient(transparent,var(--surface) 30%);
+}
+.input-field-wrap{
+  background:var(--surface-ghost);border-radius:var(--shape-4xl);
+  padding:6px;display:flex;flex-direction:column;
+}
+.input-text-area{padding:10px 8px;display:flex;align-items:center}
+.input-text-area input{
+  font-family:var(--font);font-size:14px;font-weight:400;
+  color:var(--text-high);background:transparent;
+  border:none;outline:none;width:100%;line-height:1.3;
+}
+.input-text-area input::placeholder{color:var(--text-low)}
+.input-actions{display:flex;justify-content:space-between;align-items:center;height:43px}
+.input-left-actions{display:flex;gap:2px}
+.input-icon-btn{
+  width:36px;height:36px;border-radius:var(--shape-pill);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface-ghost-icon);border:none;cursor:pointer;
+}
+.input-icon-btn:active{opacity:.7}
+.input-icon-btn svg{width:20px;height:20px}
+.speak-btn{
+  background:var(--surface-bold);border:none;border-radius:var(--shape-pill);
+  padding:10px 20px;display:flex;align-items:center;gap:8px;cursor:pointer;
+}
+.speak-btn:active{opacity:.85}
+.speak-btn svg{width:18px;height:18px}
+.speak-btn span{font-family:var(--font);font-weight:700;font-size:14px;color:#fff;line-height:1}
+</style>
+</head>
+<body>
+
+<div class="hero-banner">
+  <div class="hero-banner-overlay"></div>
+  <div class="hero-wave-bars">
+    <div class="hero-wave-bar" style="animation-delay:0s;height:8px"></div>
+    <div class="hero-wave-bar" style="animation-delay:0.1s;height:14px"></div>
+    <div class="hero-wave-bar" style="animation-delay:0.2s;height:22px"></div>
+    <div class="hero-wave-bar" style="animation-delay:0.3s;height:28px"></div>
+    <div class="hero-wave-bar" style="animation-delay:0.4s;height:22px"></div>
+    <div class="hero-wave-bar" style="animation-delay:0.5s;height:28px"></div>
+    <div class="hero-wave-bar" style="animation-delay:0.6s;height:22px"></div>
+    <div class="hero-wave-bar" style="animation-delay:0.7s;height:14px"></div>
+    <div class="hero-wave-bar" style="animation-delay:0.8s;height:8px"></div>
+  </div>
+</div>
+
+<div class="avatar-section">
+  <div class="avatar-ring">
+    <div class="avatar-inner">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="white"><path d="M12 2a1 1 0 00-1 1v18a1 1 0 002 0V3a1 1 0 00-1-1zM4 9a1 1 0 00-1 1v4a1 1 0 102 0v-4a1 1 0 00-1-1zm4-3a1 1 0 00-1 1v10a1 1 0 102 0V7a1 1 0 00-1-1zm12 3a1 1 0 00-1 1v4a1 1 0 002 0v-4a1 1 0 00-1-1zm-4-3a1 1 0 00-1 1v10a1 1 0 002 0V7a1 1 0 00-1-1z"/></svg>
+    </div>
+  </div>
+  <div class="avatar-name">Jio News AI</div>
+  <div class="avatar-sub">Your Personal Morning Briefing</div>
+</div>
+
+<div class="body-scroll">
+  <div class="section-block">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Languages</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">7 min</div>
+        <div class="stat-label">Daily Briefing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Breaking News</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title">Explore Features</div>
+
+    <a href="morning-briefing.html">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:var(--error)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2a1 1 0 00-1 1v18a1 1 0 002 0V3a1 1 0 00-1-1zM4 9a1 1 0 00-1 1v4a1 1 0 102 0v-4a1 1 0 00-1-1zm4-3a1 1 0 00-1 1v10a1 1 0 102 0V7a1 1 0 00-1-1zm12 3a1 1 0 00-1 1v4a1 1 0 002 0v-4a1 1 0 00-1-1zm-4-3a1 1 0 00-1 1v10a1 1 0 002 0V7a1 1 0 00-1-1z"/></svg>
+        </div>
+        <div>
+          <h4>Morning Briefing</h4>
+          <p>Personalised 7-min news briefing with your AI anchor</p>
+          <span class="feature-badge" style="background:var(--primary-20);color:var(--primary-50)">Story A1 + A2</span>
+        </div>
+      </div>
+    </a>
+
+    <div class="feature-card" style="opacity:0.38;pointer-events:none">
+      <div class="feature-icon" style="background:var(--secondary)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M16 6a4 4 0 11-8 0 4 4 0 018 0zm4 10.5c0 3.038-3.582 5.5-8 5.5s-8-2.462-8-5.5S7.582 11 12 11s8 2.462 8 5.5z"/></svg>
+      </div>
+      <div>
+        <h4>Sunita's Briefing</h4>
+        <p>Lighter briefing: weather, school, gold, health tips</p>
+        <span class="feature-badge" style="background:var(--grey-20);color:var(--grey-60)">Coming Soon</span>
+      </div>
+    </div>
+
+    <div class="feature-card" style="opacity:0.38;pointer-events:none">
+      <div class="feature-icon" style="background:var(--sparkle)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 3.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm2 12h-4a1 1 0 010-2h1v-3h-1a1 1 0 010-2h2a1 1 0 011 1v4h1a1 1 0 010 2z"/></svg>
+      </div>
+      <div>
+        <h4>Breaking News</h4>
+        <p>Real-time alerts with AI explanation</p>
+        <span class="feature-badge" style="background:var(--grey-20);color:var(--grey-60)">Coming Soon</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title">Quick Actions</div>
+    <div class="chips-row">
+      <a href="morning-briefing.html" style="text-decoration:none">
+        <button class="explore-chip">
+          <svg viewBox="0 0 24 24" fill="var(--error)"><path d="M19.15 10.36l-10-7A2 2 0 008 3a1.88 1.88 0 00-.92.23A2 2 0 006 5v14a2 2 0 001.08 1.77c.282.154.599.233.92.23a2 2 0 001.15-.36l10-7a2 2 0 000-3.28z"/></svg>
+          Play Today's Briefing
+        </button>
+      </a>
+      <button class="explore-chip explore-chip-disabled">
+        <svg viewBox="0 0 24 24" fill="var(--grey-60)"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+        Manage Topics
+      </button>
+      <button class="explore-chip explore-chip-disabled">
+        <svg viewBox="0 0 24 24" fill="var(--grey-60)"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.486.486 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        Settings
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Input widget -->
+<div class="input-widget">
+  <div class="input-field-wrap">
+    <div class="input-text-area">
+      <input type="text" placeholder="Ask anything about today's news..." readonly>
+    </div>
+    <div class="input-actions">
+      <div class="input-left-actions">
+        <button class="input-icon-btn">
+          <svg viewBox="0 0 24 24" fill="var(--icon-medium)"><path d="M20 11h-7V4a1 1 0 00-2 0v7H4a1 1 0 000 2h7v7a1 1 0 002 0v-7h7a1 1 0 000-2z"/></svg>
+        </button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="input-icon-btn">
+          <svg viewBox="0 0 24 24" fill="var(--icon-medium)"><path d="M12 15a3 3 0 003-3V5a3 3 0 00-6 0v7a3 3 0 003 3zm6-5a1 1 0 00-1 1v1a5 5 0 11-10 0v-1a1 1 0 10-2 0v1a7 7 0 1014 0v-1a1 1 0 00-1-1zm-3 10H9a1 1 0 000 2h6a1 1 0 000-2z"/></svg>
+        </button>
+        <a href="morning-briefing.html" style="text-decoration:none">
+          <button class="speak-btn">
+            <svg viewBox="0 0 24 24" fill="white"><path d="M19.15 10.36l-10-7A2 2 0 008 3a1.88 1.88 0 00-.92.23A2 2 0 006 5v14a2 2 0 001.08 1.77c.282.154.599.233.92.23a2 2 0 001.15-.36l10-7a2 2 0 000-3.28z"/></svg>
+            <span>Play</span>
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
