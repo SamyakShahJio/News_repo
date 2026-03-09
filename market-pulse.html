@@ -282,7 +282,7 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 .cr-range-labels { display: flex; justify-content: space-between; }
 .cr-range-label { font-size: 12px; font-weight: 700; }
 .cr-disclaimer { font-size: 11px; color: var(--text-low); margin-top: 12px; padding: 8px 12px; background: var(--grey-20); border-radius: var(--radius-sm); }
-.cr-listen-btn, .sip-listen-btn { display: flex; align-items: center; gap: 6px; margin: 14px auto 0; padding: 8px 18px; border: none; border-radius: var(--radius-pill); background: var(--primary-50); color: var(--white); font-family: 'JioType', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+.cr-listen-btn, .sip-listen-btn { display: flex; align-items: center; gap: 6px; padding: 8px 18px; border: none; border-radius: var(--radius-pill); background: var(--primary-50); color: var(--white); font-family: 'JioType', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
 .cr-listen-btn:active, .sip-listen-btn:active { transform: scale(0.96); }
 
 /* Chai pe Charcha audio player */
@@ -369,8 +369,42 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 .sd-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
 .sd-meta-item { font-size: 11px; color: var(--text-low); }
 .sd-meta-item span { font-weight: 700; color: var(--grey-100); display: block; font-size: 12px; }
-.sd-listen-btn { display: flex; align-items: center; gap: 6px; margin: 14px auto 0; padding: 8px 18px; border: none; border-radius: var(--radius-pill); background: var(--primary-50); color: var(--white); font-family: 'JioType', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+.sd-listen-btn { display: flex; align-items: center; gap: 6px; padding: 8px 18px; border: none; border-radius: var(--radius-pill); background: var(--primary-50); color: var(--white); font-family: 'JioType', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
 .sd-listen-btn:active { transform: scale(0.96); }
+
+/* TTS Play + Pause button group */
+.tts-btn-group { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; }
+.tts-pause-btn {
+  width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--grey-20); transition: all 0.2s; flex-shrink: 0;
+}
+.tts-pause-btn:active { transform: scale(0.9); }
+.tts-pause-btn[disabled] { opacity: 0.38; pointer-events: none; }
+.tts-pause-btn.tts-paused { background: var(--sparkle-20); }
+.tts-pause-btn.tts-paused svg { fill: var(--sparkle-50); }
+/* Dark variant for portfolio card */
+.pf-pause-btn {
+  width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  transition: all 0.2s; flex-shrink: 0;
+}
+.pf-pause-btn:active { transform: scale(0.9); }
+.pf-pause-btn[disabled] { opacity: 0.38; pointer-events: none; }
+.pf-pause-btn.tts-paused { background: rgba(30,204,176,0.15); }
+/* Bottom sheet speak button group */
+.bs-btn-group { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+.bs-btn-group .bs-speak-btn { flex: 1; margin-top: 0; }
+.bs-pause-btn {
+  width: 44px; height: 44px; border-radius: var(--radius-md); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface-ghost); transition: all 0.2s; flex-shrink: 0;
+}
+.bs-pause-btn:active { transform: scale(0.9); }
+.bs-pause-btn[disabled] { opacity: 0.38; pointer-events: none; }
+.bs-pause-btn.tts-paused { background: var(--sparkle-20); }
+.bs-pause-btn.tts-paused svg { fill: var(--sparkle-50); }
 
 /* Voice query card */
 .voice-query-card {
@@ -569,63 +603,58 @@ function playAudioFromUrl(url, onended) {
 
 function stopCurrentAudio() {
   if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; isSpeaking = false; }
-  resetActiveTTSBtn();
+  resetTTSGroup();
 }
 
-// === TTS Play/Pause Toggle ===
+// === TTS Play + Pause (two-button system) ===
 const SPEAKER_ICON = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
 const PAUSE_ICON = '<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>';
-let _activeTTSBtnId = null;
-let _activeTTSLabel = '';
+const PLAY_ICON = '<path d="M8 5v14l11-7z"/>';
+let _activeGroupId = null;
 
-function toggleTTSBtn(btnId, text, label) {
-  const btn = document.getElementById(btnId);
-  if (!btn) return;
-  const svg = btn.querySelector('.tts-icon');
-  const lbl = btn.querySelector('.tts-label');
+function playTTS(groupId, text) {
+  const pauseBtn = document.getElementById(groupId + '-pause');
 
-  // Currently playing this button → pause
-  if (_activeTTSBtnId === btnId && currentAudio && !currentAudio.paused) {
-    currentAudio.pause();
-    if (svg) svg.innerHTML = SPEAKER_ICON;
-    if (lbl) lbl.textContent = label;
-    showToast('Ruka diya');
-    return;
-  }
-
-  // This button was paused → resume
-  if (_activeTTSBtnId === btnId && currentAudio && currentAudio.paused && currentAudio.currentTime > 0) {
+  // If this group was paused → resume
+  if (_activeGroupId === groupId && currentAudio && currentAudio.paused && currentAudio.currentTime > 0) {
     currentAudio.play();
-    if (svg) svg.innerHTML = PAUSE_ICON;
-    if (lbl) lbl.textContent = 'Ruko';
+    if (pauseBtn) { pauseBtn.disabled = false; pauseBtn.classList.remove('tts-paused'); }
     showToast('Phir se sun rahe hain...');
     return;
   }
 
-  // New playback — stop previous and start fresh
-  resetActiveTTSBtn();
-  _activeTTSBtnId = btnId;
-  _activeTTSLabel = label;
-  if (svg) svg.innerHTML = PAUSE_ICON;
-  if (lbl) lbl.textContent = 'Ruko';
+  // New playback — stop any previous audio first
+  resetTTSGroup();
+  _activeGroupId = groupId;
+  if (pauseBtn) { pauseBtn.disabled = false; pauseBtn.classList.remove('tts-paused'); }
   showToast('Sun rahe hain...');
 
   elevenLabsTTS(text, () => {
-    resetActiveTTSBtn();
+    resetTTSGroup();
   });
 }
 
-function resetActiveTTSBtn() {
-  if (_activeTTSBtnId) {
-    const btn = document.getElementById(_activeTTSBtnId);
-    if (btn) {
-      const svg = btn.querySelector('.tts-icon');
-      const lbl = btn.querySelector('.tts-label');
-      if (svg) svg.innerHTML = SPEAKER_ICON;
-      if (lbl) lbl.textContent = _activeTTSLabel;
-    }
-    _activeTTSBtnId = null;
-    _activeTTSLabel = '';
+function pauseTTS(groupId) {
+  if (_activeGroupId !== groupId || !currentAudio) return;
+  const pauseBtn = document.getElementById(groupId + '-pause');
+
+  if (!currentAudio.paused) {
+    currentAudio.pause();
+    if (pauseBtn) pauseBtn.classList.add('tts-paused');
+    showToast('Ruka diya');
+  } else if (currentAudio.paused && currentAudio.currentTime > 0) {
+    // Pressing pause again while paused → resume
+    currentAudio.play();
+    if (pauseBtn) pauseBtn.classList.remove('tts-paused');
+    showToast('Phir se sun rahe hain...');
+  }
+}
+
+function resetTTSGroup() {
+  if (_activeGroupId) {
+    const pauseBtn = document.getElementById(_activeGroupId + '-pause');
+    if (pauseBtn) { pauseBtn.disabled = true; pauseBtn.classList.remove('tts-paused'); }
+    _activeGroupId = null;
   }
 }
 
@@ -1035,10 +1064,15 @@ function buildMarketSummaryCard() {
     </div>
 
     <div class="ms-section" style="text-align:center">
-      <button class="ms-listen-btn" id="tts-ms" onclick="toggleTTSBtn('tts-ms', STOCKS_DATA.marketSummary.speakText, 'Poora haal suniye — 30 sec')">
-        <svg class="tts-icon" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-        <span class="tts-label">Poora haal suniye — 30 sec</span>
-      </button>
+      <div class="tts-btn-group">
+        <button class="ms-listen-btn" onclick="playTTS('tts-ms', STOCKS_DATA.marketSummary.speakText)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <span>Poora haal suniye — 30 sec</span>
+        </button>
+        <button class="tts-pause-btn" id="tts-ms-pause" disabled onclick="pauseTTS('tts-ms')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+        </button>
+      </div>
     </div>
   </div>`;
 }
@@ -1107,9 +1141,14 @@ function buildPortfolioCard() {
   return `<div class="portfolio-card">
     <div class="pf-header">
       <div class="pf-label">Amit ka Portfolio</div>
-      <div class="pf-listen-btn" id="tts-pf" onclick="toggleTTSBtn('tts-pf', STOCKS_DATA.portfolio.speakText, 'Suniye')">
-        <svg class="tts-icon" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-        <span class="tts-label">Suniye</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="pf-listen-btn" onclick="playTTS('tts-pf', STOCKS_DATA.portfolio.speakText)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <span>Suniye</span>
+        </div>
+        <button class="pf-pause-btn" id="tts-pf-pause" disabled onclick="pauseTTS('tts-pf')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+        </button>
       </div>
     </div>
     <div class="pf-invested">Lagaya: ₹${pf.invested.toLocaleString()}</div>
@@ -1124,7 +1163,7 @@ function buildPortfolioCard() {
   </div>`;
 }
 
-// speakPortfolioSummary now handled via toggleTTSBtn with STOCKS_DATA.portfolio.speakText
+// speakPortfolioSummary now handled via playTTS with STOCKS_DATA.portfolio.speakText
 
 function openStockDetail(idx) {
   const s = STOCKS_DATA.portfolio.stocks[idx];
@@ -1145,14 +1184,19 @@ function openStockDetail(idx) {
       <div class="bs-stat-row"><span class="bs-stat-label">52W High / Low</span><span class="bs-stat-value">₹${d.weekHigh} / ₹${d.weekLow}</span></div>
       <div class="bs-stat-row" style="border:none"><span class="bs-stat-label">Analyst Rating</span><span class="bs-stat-value">${d.analystRating}</span></div>
     </div>
-    <button class="bs-speak-btn" id="tts-bs" onclick="toggleTTSBtn('tts-bs', STOCKS_DATA.portfolio.stocks[${idx}].speakText, 'Hindi mein suniye')">
-      <svg class="tts-icon" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-      <span class="tts-label">Hindi mein suniye</span>
-    </button>
+    <div class="bs-btn-group">
+      <button class="bs-speak-btn" onclick="playTTS('tts-bs', STOCKS_DATA.portfolio.stocks[${idx}].speakText)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        <span>Hindi mein suniye</span>
+      </button>
+      <button class="bs-pause-btn" id="tts-bs-pause" disabled onclick="pauseTTS('tts-bs')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+      </button>
+    </div>
   `);
 }
 
-// speakStockDetail now handled via toggleTTSBtn with STOCKS_DATA.portfolio.stocks[idx].speakText
+// speakStockDetail now handled via playTTS with STOCKS_DATA.portfolio.stocks[idx].speakText
 
 // === Build ₹100 Challenge Card ===
 function buildChallengeCard() {
@@ -1215,10 +1259,15 @@ function showChallengeResult(stock) {
           <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--radius-pill);background:${data.riskBg};color:${data.riskColor}">${data.riskLabel}</span>
         </div>
         <div class="cr-disclaimer">Yeh estimate hai, guarantee nahi. Invest karne se pehle apna research zaroor karein.</div>
-        <button class="cr-listen-btn" id="tts-cr" onclick="toggleTTSBtn('tts-cr', STOCKS_DATA.challenge['${stock}'].speakText, 'Hindi mein suniye')">
-          <svg class="tts-icon" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-          <span class="tts-label">Hindi mein suniye</span>
-        </button>
+        <div class="tts-btn-group">
+          <button class="cr-listen-btn" onclick="playTTS('tts-cr', STOCKS_DATA.challenge['${stock}'].speakText)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            <span>Hindi mein suniye</span>
+          </button>
+          <button class="tts-pause-btn" id="tts-cr-pause" disabled onclick="pauseTTS('tts-cr')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+          </button>
+        </div>
       </div>
     `, 200, true);
 
@@ -1339,10 +1388,15 @@ function showStockDiveResult(id) {
         <div class="sd-verdict">
           <div class="sd-verdict-text" style="color:${data.verdictColor}">${data.verdict}</div>
         </div>
-        <button class="sd-listen-btn" id="tts-sd" onclick="toggleTTSBtn('tts-sd', STOCKS_DATA.stockDive.results['${id}'].speakText, 'Hindi mein suniye')">
-          <svg class="tts-icon" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-          <span class="tts-label">Hindi mein suniye</span>
-        </button>
+        <div class="tts-btn-group">
+          <button class="sd-listen-btn" onclick="playTTS('tts-sd', STOCKS_DATA.stockDive.results['${id}'].speakText)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+            <span>Hindi mein suniye</span>
+          </button>
+          <button class="tts-pause-btn" id="tts-sd-pause" disabled onclick="pauseTTS('tts-sd')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+          </button>
+        </div>
       </div>
     `, 200, true);
 
@@ -1412,10 +1466,15 @@ function calculateSIP() {
       <div class="sip-result-amount">₹${futureValue.toLocaleString()}</div>
       <div class="sip-result-gain">Lagaya: ₹${totalInvested.toLocaleString()} | Profit: ₹${gain.toLocaleString()}</div>
     </div>
-    <button class="sip-listen-btn" id="tts-sip" onclick="toggleTTSBtn('tts-sip', window._lastSIPSpeak, 'Suniye')">
-      <svg class="tts-icon" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-      <span class="tts-label">Suniye</span>
-    </button>
+    <div class="tts-btn-group">
+      <button class="sip-listen-btn" onclick="playTTS('tts-sip', window._lastSIPSpeak)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        <span>Suniye</span>
+      </button>
+      <button class="tts-pause-btn" id="tts-sip-pause" disabled onclick="pauseTTS('tts-sip')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+      </button>
+    </div>
   `;
   scrollToBottom();
 }
