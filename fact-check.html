@@ -673,8 +673,7 @@ function preCacheTTS(text) {
 
 // ============== TTS CONTENT ==============
 const TTS_VERDICT = 'रमेश जी, यह खबर पूरी तरह गलत है। आर.बी.आई. ने ऐसा कोई नोटिफिकेशन जारी नहीं किया है। दो हज़ार रुपये के नोट बंद होने की कोई आधिकारिक घोषणा नहीं हुई है। यह संदेश पहली बार अक्टूबर 2023 में वायरल हुआ था और तब भी गलत था। विश्वास न्यूज़ और पी.आई.बी. फैक्ट चेक दोनों ने इसे झूठा करार दिया है।';
-const TTS_WELCOME = 'नमस्कार रमेश जी। मैं हूँ जिओ भारत आई.क्यू. फैक्ट चेक शील्ड। कोई भी संदिग्ध मैसेज, लिंक, या स्क्रीनशॉट भेजें, मैं तुरंत सच्चाई बता दूँगा।';
-const TTS_CORRECTION = 'क्या आप अपने ग्रुप में करेक्शन भेजना चाहेंगे? मैंने आपके लिए एक तैयार संदेश बनाया है।';
+// Only verdict TTS — single voice dialogue in the entire flow
 
 // ============== HELPERS ==============
 const chatArea = document.getElementById('chatArea');
@@ -723,10 +722,7 @@ let selectedGroups = new Set();
 async function startFlow() {
   // Pre-cache verdict TTS early
   preCacheTTS(TTS_VERDICT);
-  preCacheTTS(TTS_CORRECTION);
-
   await addMsg('ai', 'Namaskar <strong>Ramesh ji!</strong> Main hoon aapka <strong>Fact-Check Shield</strong> &mdash; JioBharatIQ Verify.');
-  elevenLabsTTS(TTS_WELCOME);
   await wait(400);
   await addMsg('ai', 'Koi bhi sandigdh message, link, screenshot ya voice mein &mdash; bhejiye, main turant sachai bata dunga.');
   await wait(600);
@@ -1021,8 +1017,7 @@ async function showVerdict() {
 
   await wait(1500);
 
-  // Correction prompt
-  elevenLabsTTS(TTS_CORRECTION);
+  // Correction prompt (no TTS — verdict speech continues uninterrupted)
   addRaw(`
     <div class="correction-prompt">
       <div class="correction-prompt-text">
