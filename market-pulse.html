@@ -593,12 +593,21 @@ async function elevenLabsTTS(text, onended = null) {
 }
 
 function playAudioFromUrl(url, onended) {
+  // Preserve active group — stopCurrentAudio resets it but we're about to play new audio
+  const savedGroup = _activeGroupId;
   stopCurrentAudio();
+  _activeGroupId = savedGroup;
   currentAudio = new Audio(url);
   isSpeaking = true;
   currentAudio.onended = () => { isSpeaking = false; if (onended) onended(); };
   currentAudio.onerror = () => { isSpeaking = false; if (onended) onended(); };
-  currentAudio.play().catch(() => { isSpeaking = false; if (onended) setTimeout(onended, 300); });
+  currentAudio.play().then(() => {
+    // Audio started — enable the pause button for the active group
+    if (_activeGroupId) {
+      const pb = document.getElementById(_activeGroupId + '-pause');
+      if (pb) { pb.disabled = false; pb.classList.remove('tts-paused'); }
+    }
+  }).catch(() => { isSpeaking = false; if (onended) setTimeout(onended, 300); });
 }
 
 function stopCurrentAudio() {
@@ -626,7 +635,7 @@ function playTTS(groupId, text) {
   // New playback — stop any previous audio first
   resetTTSGroup();
   _activeGroupId = groupId;
-  if (pauseBtn) { pauseBtn.disabled = false; pauseBtn.classList.remove('tts-paused'); }
+  // Pause button stays disabled until audio actually starts (enabled in playAudioFromUrl)
   showToast('Sun rahe hain...');
 
   elevenLabsTTS(text, () => {
