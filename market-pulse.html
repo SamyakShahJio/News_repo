@@ -19,6 +19,7 @@
   --secondary-20: #fef7e9;
   --secondary-40: #ffd947;
   --secondary-50: #f7ab20;
+  --secondary-60: #ac660c;
   --sparkle-20: #e8faf7;
   --sparkle-50: #1eccb0;
   --error: #fa2f40;
@@ -75,7 +76,7 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 /* Chat area */
 .chat-body { display: flex; flex-direction: column; height: calc(100vh - 56px - 88px); }
 .chat-area {
-  flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 8px;
+  flex: 1; overflow-y: auto; padding: 16px; padding-bottom: 80px;
   display: flex; flex-direction: column; gap: 12px;
   scroll-behavior: smooth; background: var(--white);
 }
@@ -94,6 +95,52 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 .skeleton { background: linear-gradient(90deg, var(--surface-ghost) 25%, var(--grey-40) 50%, var(--surface-ghost) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: var(--radius-sm); }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+/* Market Summary */
+.ms-card { background: var(--white); border-radius: var(--radius-lg); border: 1.5px solid var(--stroke-subtle); overflow: hidden; }
+.ms-mood { padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+.ms-mood-green { background: var(--sparkle-20); }
+.ms-mood-yellow { background: var(--secondary-20); }
+.ms-mood-red { background: rgba(250,47,64,0.08); }
+.ms-mood-dot { width: 14px; height: 14px; border-radius: 50%; animation: msPulse 1.5s ease infinite; }
+.ms-mood-dot-green { background: var(--success); box-shadow: 0 0 8px rgba(37,171,33,0.4); }
+.ms-mood-dot-yellow { background: var(--warning); box-shadow: 0 0 8px rgba(240,109,15,0.4); }
+.ms-mood-dot-red { background: var(--error); box-shadow: 0 0 8px rgba(250,47,64,0.4); }
+@keyframes msPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+.ms-mood-text { font-size: 14px; font-weight: 900; color: var(--grey-100); }
+.ms-mood-detail { font-size: 11px; color: var(--text-low); font-weight: 400; }
+.ms-indices { display: flex; gap: 0; padding: 0; border-bottom: 1px solid var(--stroke-subtle); }
+.ms-index { flex: 1; padding: 12px 10px; text-align: center; border-right: 1px solid var(--stroke-subtle); }
+.ms-index:last-child { border-right: none; }
+.ms-index-name { font-size: 10px; font-weight: 700; color: var(--text-low); text-transform: uppercase; letter-spacing: 0.5px; }
+.ms-index-value { font-size: 16px; font-weight: 900; color: var(--grey-100); margin-top: 2px; }
+.ms-index-change { font-size: 11px; font-weight: 700; margin-top: 1px; }
+.ms-section { padding: 14px 16px; }
+.ms-section + .ms-section { border-top: 1px solid var(--stroke-subtle); }
+.ms-section-title { font-size: 12px; font-weight: 900; color: var(--grey-100); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.ms-gl-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.ms-gl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.ms-gl-name { font-size: 13px; font-weight: 700; color: var(--grey-100); flex: 1; }
+.ms-gl-pct { font-size: 13px; font-weight: 900; min-width: 48px; text-align: right; }
+.ms-gl-reason { font-size: 10px; color: var(--text-low); margin-top: -2px; padding-left: 16px; }
+.ms-sectors { display: flex; flex-wrap: wrap; gap: 6px; }
+.ms-sector-tag { padding: 5px 10px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+.ms-sector-up { background: rgba(37,171,33,0.08); color: var(--success); }
+.ms-sector-down { background: rgba(250,47,64,0.08); color: var(--error); }
+.ms-fii-row { display: flex; gap: 10px; }
+.ms-fii-card { flex: 1; padding: 10px 12px; border-radius: var(--radius-sm); text-align: center; }
+.ms-fii-buy { background: rgba(37,171,33,0.06); border: 1px solid rgba(37,171,33,0.15); }
+.ms-fii-sell { background: rgba(250,47,64,0.06); border: 1px solid rgba(250,47,64,0.15); }
+.ms-fii-label { font-size: 10px; font-weight: 700; color: var(--text-low); text-transform: uppercase; }
+.ms-fii-who { font-size: 12px; font-weight: 900; color: var(--grey-100); margin-top: 2px; }
+.ms-fii-amount { font-size: 14px; font-weight: 900; margin-top: 2px; }
+.ms-gold-row { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--secondary-20); border-radius: var(--radius-sm); margin-top: 8px; }
+.ms-gold-icon { font-size: 18px; }
+.ms-gold-label { font-size: 12px; color: var(--grey-80); }
+.ms-gold-price { font-size: 14px; font-weight: 900; color: var(--secondary-60); margin-left: auto; }
+.ms-gold-change { font-size: 11px; font-weight: 700; color: var(--success); }
+.ms-listen-btn { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0 auto; padding: 10px 22px; border: none; border-radius: var(--radius-pill); background: var(--primary-50); color: var(--white); font-family: 'JioType', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+.ms-listen-btn:active { transform: scale(0.96); }
+
 /* Time Machine card */
 .tm-carousel { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 0; -webkit-overflow-scrolling: touch; }
 .tm-carousel::-webkit-scrollbar { display: none; }
@@ -103,7 +150,7 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 }
 .tm-card:active { transform: scale(0.97); }
 .tm-card-green { background: linear-gradient(135deg, #e8faf7 0%, #d4f5ef 100%); border: 1.5px solid rgba(30,204,176,0.2); }
-.tm-card-red { background: linear-gradient(135deg, #fff0f1 0%, #ffe8ea 100%); border: 1.5px solid rgba(250,47,64,0.15); }
+.tm-card-red { background: rgba(250,47,64,0.06); border: 1.5px solid rgba(250,47,64,0.15); }
 .tm-stock-name { font-size: 13px; font-weight: 700; color: var(--text-low); text-transform: uppercase; letter-spacing: 0.5px; }
 .tm-amount-row { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; }
 .tm-amount-start { font-size: 24px; font-weight: 900; color: var(--grey-100); }
@@ -598,6 +645,42 @@ function setLang(lang) {
 
 // === Stock Data ===
 const STOCKS_DATA = {
+  marketSummary: {
+    date: new Date().toLocaleDateString('hi-IN', { weekday: 'long', day: 'numeric', month: 'long' }),
+    indices: [
+      { name: 'Sensex', value: '74,832', change: '+248', pct: '+0.33%', up: true },
+      { name: 'Nifty 50', value: '22,650', change: '+72', pct: '+0.32%', up: true },
+      { name: 'Bank Nifty', value: '48,920', change: '+185', pct: '+0.38%', up: true }
+    ],
+    mood: 'green', // green | yellow | red
+    moodLabel: 'Bazaar mein tezi',
+    moodDetail: '1,420 stocks upar, 890 neeche',
+    topGainers: [
+      { name: 'Tata Motors', pct: '+3.2%', reason: 'EV sales record' },
+      { name: 'SBI', pct: '+2.1%', reason: 'NPA mein sudhar' },
+      { name: 'Zomato', pct: '+1.8%', reason: 'Quick commerce growth' }
+    ],
+    topLosers: [
+      { name: 'TCS', pct: '-1.5%', reason: 'US deal cancellation' },
+      { name: 'Infosys', pct: '-0.9%', reason: 'IT sector pressure' },
+      { name: 'Vodafone Idea', pct: '-2.3%', reason: 'Debt tension' }
+    ],
+    sectors: [
+      { name: 'Banking', pct: '+0.8%', up: true },
+      { name: 'Auto', pct: '+1.4%', up: true },
+      { name: 'IT', pct: '-0.7%', up: false },
+      { name: 'Pharma', pct: '+0.3%', up: true },
+      { name: 'Metal', pct: '-0.4%', up: false },
+      { name: 'FMCG', pct: '+0.2%', up: true }
+    ],
+    fiiDii: {
+      fii: { action: 'Bikriya', amount: '₹1,250 Cr', sell: true },
+      dii: { action: 'Khareedaari', amount: '₹1,830 Cr', sell: false }
+    },
+    gold: '₹72,450/10g',
+    goldChange: '+0.4%',
+    speakText: 'नमस्कार अमित भाई! आज बाज़ार में तेज़ी रही। सेंसेक्स चौहत्तर हज़ार आठ सौ बत्तीस पर बंद हुआ, दो सौ अड़तालीस अंक ऊपर। निफ्टी बाईस हज़ार छः सौ पचास पर। चौदह सौ बीस स्टॉक ऊपर गए, आठ सौ नब्बे नीचे। टाटा मोटर्स आज का स्टार रहा, तीन पॉइंट दो प्रतिशत ऊपर, ई.वी. सेल्स रिकॉर्ड की वजह से। आई.टी. सेक्टर में दबाव रहा, टी.सी.एस. और इन्फ़ोसिस दोनों नीचे। विदेशी निवेशकों ने बारह सौ पचास करोड़ की बिक्री की, लेकिन देसी संस्थाओं ने अठारह सौ तीस करोड़ की खरीदारी से बाज़ार को सहारा दिया। सोना बहत्तर हज़ार चार सौ पचास पर स्थिर है।'
+  },
   timeMachine: [
     { name: 'Zomato', invested: 500, current: 648, pct: 29.6, period: '1 saal pehle', positive: true },
     { name: 'Tata Motors', invested: 500, current: 580, pct: 16.0, period: '1 saal pehle', positive: true },
@@ -639,7 +722,7 @@ const STOCKS_DATA = {
       { id: 'reliance', name: 'Reliance Industries', icon: '🏭', tag: 'Oil to Jio', tagColor: 'var(--primary-50)', tagBg: 'var(--primary-20)' },
       { id: 'it_sector', name: 'IT Sector', icon: '💻', tag: 'TCS, Infy, Wipro', tagColor: 'var(--sparkle-50)', tagBg: 'var(--sparkle-20)' },
       { id: 'banking', name: 'Banking Sector', icon: '🏦', tag: 'SBI, HDFC, ICICI', tagColor: 'var(--secondary-50)', tagBg: 'var(--secondary-20)' },
-      { id: 'gold_silver', name: 'Sona-Chandi', icon: '🥇', tag: 'Gold & Silver', tagColor: '#B8860B', tagBg: '#FFF8DC' }
+      { id: 'gold_silver', name: 'Sona-Chandi', icon: '🥇', tag: 'Gold & Silver', tagColor: 'var(--secondary-60)', tagBg: 'var(--secondary-20)' }
     ],
     results: {
       reliance: {
@@ -679,7 +762,7 @@ const STOCKS_DATA = {
         strength: 'Global tension mein gold safe haven hai. Central banks gold kharid rahe hain.',
         risk: 'Dollar strong hone par gold gir sakta hai. Silver mein zyada volatility hai.',
         verdict: 'Gold: steady growth | Silver: high risk-high reward',
-        verdictColor: '#B8860B',
+        verdictColor: 'var(--secondary-60)',
         speakText: 'सोने का भाव आज बहत्तर हज़ार चार सौ पचास रुपये प्रति दस ग्राम है। चांदी पचासी हज़ार दो सौ रुपये प्रति किलो। ग्लोबल टेंशन में गोल्ड सेफ हेवन माना जाता है। सेंट्रल बैंक गोल्ड खरीद रहे हैं। लेकिन डॉलर स्ट्रॉन्ग होने पर गोल्ड गिर सकता है। सिल्वर में ज़्यादा वोलैटिलिटी है।'
       }
     }
@@ -708,6 +791,7 @@ async function goToState(state) {
       await addMsg('ai', 'Aaj aapke liye kya dekhein?');
       await addRaw(`
         <div class="chips">
+          <div class="chip chip-rich" onclick="goToState('market_summary')">Aaj ka Bazaar<span class="chip-desc">Sensex, Nifty aur poora haal</span></div>
           <div class="chip chip-rich" onclick="goToState('portfolio')">Mera Portfolio<span class="chip-desc">Apne 4 stocks ka haal dekho</span></div>
           <div class="chip chip-rich" onclick="goToState('chai_pe_charcha')">Chai pe Charcha<span class="chip-desc">2 min mein aaj ka market suno</span></div>
           <div class="chip chip-rich" onclick="goToState('challenge')">₹100 ka Challenge<span class="chip-desc">Chhoti rakam, bada seekh</span></div>
@@ -715,6 +799,21 @@ async function goToState(state) {
           <div class="chip chip-rich" onclick="goToState('stock_dive')">Stock Deep Dive<span class="chip-desc">Kisi stock ya sector ko samjho</span></div>
         </div>
       `, 200);
+      break;
+
+    case 'market_summary':
+      await addMsg('user', 'Aaj ka bazaar dikhao');
+      showTyping(); await wait(800); hideTyping();
+      await addMsg('ai', 'Aaj ka poora haal-chaal ek nazar mein — <strong>Amit bhai ke liye tayyar</strong>:');
+      await addRaw(buildMarketSummaryCard(), 300, true);
+      await wait(600);
+      await addRaw(`
+        <div class="chips">
+          <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
+          <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
+          <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
+        </div>
+      `, 400);
       break;
 
     case 'time_machine':
@@ -793,6 +892,106 @@ async function goToState(state) {
       `, 400);
       break;
   }
+}
+
+// === Build Market Summary Card ===
+function buildMarketSummaryCard() {
+  const ms = STOCKS_DATA.marketSummary;
+
+  const indicesHTML = ms.indices.map(idx => `
+    <div class="ms-index">
+      <div class="ms-index-name">${idx.name}</div>
+      <div class="ms-index-value">${idx.value}</div>
+      <div class="ms-index-change" style="color:${idx.up ? 'var(--success)' : 'var(--error)'}">${idx.change} (${idx.pct})</div>
+    </div>
+  `).join('');
+
+  const gainersHTML = ms.topGainers.map(g => `
+    <div>
+      <div class="ms-gl-row">
+        <div class="ms-gl-dot" style="background:var(--success)"></div>
+        <div class="ms-gl-name">${g.name}</div>
+        <div class="ms-gl-pct" style="color:var(--success)">${g.pct}</div>
+      </div>
+      <div class="ms-gl-reason">${g.reason}</div>
+    </div>
+  `).join('');
+
+  const losersHTML = ms.topLosers.map(l => `
+    <div>
+      <div class="ms-gl-row">
+        <div class="ms-gl-dot" style="background:var(--error)"></div>
+        <div class="ms-gl-name">${l.name}</div>
+        <div class="ms-gl-pct" style="color:var(--error)">${l.pct}</div>
+      </div>
+      <div class="ms-gl-reason">${l.reason}</div>
+    </div>
+  `).join('');
+
+  const sectorsHTML = ms.sectors.map(s => `
+    <div class="ms-sector-tag ${s.up ? 'ms-sector-up' : 'ms-sector-down'}">
+      ${s.up ? '▲' : '▼'} ${s.name} ${s.pct}
+    </div>
+  `).join('');
+
+  const fii = ms.fiiDii.fii;
+  const dii = ms.fiiDii.dii;
+
+  return `<div class="ms-card">
+    <div class="ms-mood ms-mood-${ms.mood}">
+      <div class="ms-mood-dot ms-mood-dot-${ms.mood}"></div>
+      <div>
+        <div class="ms-mood-text">${ms.moodLabel}</div>
+        <div class="ms-mood-detail">${ms.moodDetail}</div>
+      </div>
+    </div>
+
+    <div class="ms-indices">${indicesHTML}</div>
+
+    <div class="ms-section">
+      <div class="ms-section-title">📈 Aaj ke sitare</div>
+      ${gainersHTML}
+    </div>
+
+    <div class="ms-section">
+      <div class="ms-section-title">📉 Aaj gire</div>
+      ${losersHTML}
+    </div>
+
+    <div class="ms-section">
+      <div class="ms-section-title">🏭 Sectors</div>
+      <div class="ms-sectors">${sectorsHTML}</div>
+    </div>
+
+    <div class="ms-section">
+      <div class="ms-section-title">🏦 FII / DII</div>
+      <div class="ms-fii-row">
+        <div class="ms-fii-card ${fii.sell ? 'ms-fii-sell' : 'ms-fii-buy'}">
+          <div class="ms-fii-label">Videshi (FII)</div>
+          <div class="ms-fii-who">${fii.action}</div>
+          <div class="ms-fii-amount" style="color:${fii.sell ? 'var(--error)' : 'var(--success)'}">${fii.amount}</div>
+        </div>
+        <div class="ms-fii-card ${dii.sell ? 'ms-fii-sell' : 'ms-fii-buy'}">
+          <div class="ms-fii-label">Desi (DII)</div>
+          <div class="ms-fii-who">${dii.action}</div>
+          <div class="ms-fii-amount" style="color:${dii.sell ? 'var(--error)' : 'var(--success)'}">${dii.amount}</div>
+        </div>
+      </div>
+      <div class="ms-gold-row">
+        <div class="ms-gold-icon">🥇</div>
+        <div><div class="ms-gold-label">Sona</div></div>
+        <div class="ms-gold-price">${ms.gold}</div>
+        <div class="ms-gold-change">${ms.goldChange}</div>
+      </div>
+    </div>
+
+    <div class="ms-section" style="text-align:center">
+      <button class="ms-listen-btn" onclick="elevenLabsTTS(STOCKS_DATA.marketSummary.speakText); showToast('Bazaar ka haal sun rahe hain...')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        Poora haal suniye — 30 sec
+      </button>
+    </div>
+  </div>`;
 }
 
 // === Build Time Machine Carousel ===
@@ -1247,7 +1446,9 @@ function handleTextInput() {
   input.value = '';
 
   const lowerText = text.toLowerCase();
-  if (lowerText.includes('reliance') || lowerText.includes('scene') || lowerText.includes('kya')) {
+  if (lowerText.includes('bazaar') || lowerText.includes('market') || lowerText.includes('sensex') || lowerText.includes('nifty') || lowerText.includes('aaj ka')) {
+    goToState('market_summary');
+  } else if (lowerText.includes('reliance') || lowerText.includes('scene') || lowerText.includes('kya')) {
     addMsg('user', text).then(() => simulateReliance());
   } else if (lowerText.includes('portfolio') || lowerText.includes('mera')) {
     goToState('portfolio');
