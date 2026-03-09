@@ -241,6 +241,8 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 .cr-range-labels { display: flex; justify-content: space-between; }
 .cr-range-label { font-size: 12px; font-weight: 700; }
 .cr-disclaimer { font-size: 11px; color: var(--text-low); margin-top: 12px; padding: 8px 12px; background: var(--grey-20); border-radius: var(--radius-sm); }
+.cr-listen-btn, .sip-listen-btn { display: flex; align-items: center; gap: 6px; margin: 14px auto 0; padding: 8px 18px; border: none; border-radius: var(--radius-pill); background: var(--primary-50); color: var(--white); font-family: 'JioType', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+.cr-listen-btn:active, .sip-listen-btn:active { transform: scale(0.96); }
 
 /* Chai pe Charcha audio player */
 .chai-card {
@@ -299,6 +301,35 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 }
 .sip-calc-btn:active { opacity: 0.85; }
 .sip-calc-btn span { font-size: 14px; font-weight: 700; color: var(--white); font-family: 'JioType', sans-serif; }
+
+/* Stock Deep Dive */
+.sd-card { background: var(--white); border-radius: var(--radius-lg); border: 1.5px solid var(--stroke-subtle); padding: 16px; }
+.sd-title { font-size: 16px; font-weight: 900; color: var(--grey-100); }
+.sd-sub { font-size: 12px; color: var(--text-low); margin-top: 2px; }
+.sd-options { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.sd-opt { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: var(--radius-md); border: 1.5px solid var(--stroke-subtle); cursor: pointer; transition: all 0.2s; background: var(--white); }
+.sd-opt:active { background: var(--grey-20); transform: scale(0.98); }
+.sd-opt-icon { font-size: 22px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); background: var(--grey-20); }
+.sd-opt-info { flex: 1; }
+.sd-opt-info h4 { font-size: 14px; font-weight: 700; color: var(--grey-100); margin: 0; }
+.sd-opt-tag { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-pill); }
+.sd-result { background: var(--white); border-radius: var(--radius-lg); border: 1.5px solid var(--stroke-subtle); padding: 16px; }
+.sd-result-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.sd-result-title { font-size: 16px; font-weight: 900; color: var(--grey-100); }
+.sd-result-price { font-size: 14px; font-weight: 700; color: var(--grey-100); text-align: right; }
+.sd-result-change { font-size: 12px; font-weight: 700; }
+.sd-section { margin-top: 12px; padding: 10px 12px; border-radius: var(--radius-sm); }
+.sd-section-green { background: rgba(37,171,33,0.06); border-left: 3px solid var(--success); }
+.sd-section-red { background: rgba(250,47,64,0.06); border-left: 3px solid var(--error); }
+.sd-section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-low); margin-bottom: 4px; }
+.sd-section-text { font-size: 13px; color: var(--grey-100); line-height: 1.4; }
+.sd-verdict { margin-top: 14px; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--grey-20); text-align: center; }
+.sd-verdict-text { font-size: 13px; font-weight: 700; }
+.sd-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+.sd-meta-item { font-size: 11px; color: var(--text-low); }
+.sd-meta-item span { font-weight: 700; color: var(--grey-100); display: block; font-size: 12px; }
+.sd-listen-btn { display: flex; align-items: center; gap: 6px; margin: 14px auto 0; padding: 8px 18px; border: none; border-radius: var(--radius-pill); background: var(--primary-50); color: var(--white); font-family: 'JioType', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+.sd-listen-btn:active { transform: scale(0.96); }
 
 /* Voice query card */
 .voice-query-card {
@@ -603,6 +634,56 @@ const STOCKS_DATA = {
     tata: { low: 90, high: 130, fill: 55, color: 'var(--secondary-50)', riskLabel: 'Medium Risk', riskBg: 'var(--secondary-20)', riskColor: 'var(--secondary-50)', speakText: 'टाटा मोटर्स मीडियम रिस्क स्टॉक है। एक साल बाद आपके सौ रुपये नब्बे से एक सौ तीस के बीच हो सकते हैं। ई.वी. ग्रोथ अच्छी है लेकिन ऑटो सेक्टर में उतार-चढ़ाव रहता है।' },
     zomato: { low: 75, high: 160, fill: 45, color: 'var(--primary-50)', riskLabel: 'High Risk', riskBg: 'var(--primary-20)', riskColor: 'var(--primary-50)', speakText: 'ज़ोमैटो हाई ग्रोथ, हाई रिस्क स्टॉक है। एक साल बाद आपके सौ रुपये पचहत्तर से एक सौ साठ के बीच हो सकते हैं। ग्रोथ बहुत अच्छी है लेकिन गिरावट भी तेज़ हो सकती है। यह एस्टीमेट है, गारंटी नहीं।' }
   },
+  stockDive: {
+    options: [
+      { id: 'reliance', name: 'Reliance Industries', icon: '🏭', tag: 'Oil to Jio', tagColor: 'var(--primary-50)', tagBg: 'var(--primary-20)' },
+      { id: 'it_sector', name: 'IT Sector', icon: '💻', tag: 'TCS, Infy, Wipro', tagColor: 'var(--sparkle-50)', tagBg: 'var(--sparkle-20)' },
+      { id: 'banking', name: 'Banking Sector', icon: '🏦', tag: 'SBI, HDFC, ICICI', tagColor: 'var(--secondary-50)', tagBg: 'var(--secondary-20)' },
+      { id: 'gold_silver', name: 'Sona-Chandi', icon: '🥇', tag: 'Gold & Silver', tagColor: '#B8860B', tagBg: '#FFF8DC' }
+    ],
+    results: {
+      reliance: {
+        title: 'Reliance Industries',
+        price: '₹2,450', change: '+1.2%', changeUp: true,
+        pe: '28.5', weekRange: '₹2,100 – ₹2,800', marketCap: '₹16.6 lakh crore',
+        strength: 'Jio subscriber record level par hai, retail aur oil dono segments strong.',
+        risk: 'Telecom mein competition badh raha hai, new energy mein abhi profit nahi.',
+        verdict: '12 mein se 9 analysts kehte hain — Buy',
+        verdictColor: 'var(--sparkle-50)',
+        speakText: 'रिलायंस इंडस्ट्रीज़ आज चौबीस सौ पचास रुपये पर है। जियो के सब्सक्राइबर रिकॉर्ड लेवल पर हैं। ऑयल और रिटेल दोनों सेगमेंट अच्छा कर रहे हैं। बारह एनालिस्ट्स में से नौ कहते हैं बाय। लेकिन टेलीकॉम में कम्पटीशन भी बढ़ रहा है।'
+      },
+      it_sector: {
+        title: 'IT Sector Overview',
+        price: 'Nifty IT: 34,200', change: '-0.8%', changeUp: false,
+        pe: '26.2 (sector avg)', weekRange: '30,100 – 38,500', marketCap: '—',
+        strength: 'AI aur cloud deals badh rahe hain. Dollar strong hone se revenue badhega.',
+        risk: 'US mein recession ka darr hai. Hiring slow hai aur margins par pressure hai.',
+        verdict: 'Mixed — TCS aur Infosys stable, mid-caps mein zyada growth',
+        verdictColor: 'var(--secondary-50)',
+        speakText: 'आई.टी. सेक्टर में मिला-जुला हाल है। निफ्टी आई.टी. चौंतीस हज़ार दो सौ पर है, शून्य पॉइंट आठ प्रतिशत नीचे। ए.आई. और क्लाउड डील्स बढ़ रही हैं लेकिन यू.एस. में रिसेशन का डर है। टी.सी.एस. और इन्फ़ोसिस स्टेबल हैं, मिड-कैप में ज़्यादा ग्रोथ दिख रही है।'
+      },
+      banking: {
+        title: 'Banking Sector Overview',
+        price: 'Bank Nifty: 48,900', change: '+0.5%', changeUp: true,
+        pe: '14.8 (sector avg)', weekRange: '42,000 – 52,500', marketCap: '—',
+        strength: 'Credit growth 15%+ hai. NPA kam ho rahe hain. RBI ka stance supportive hai.',
+        risk: 'Interest rate cycle turn ho sakta hai. Unsecured loans badh rahe hain.',
+        verdict: 'Positive — SBI, HDFC Bank top picks hain',
+        verdictColor: 'var(--sparkle-50)',
+        speakText: 'बैंकिंग सेक्टर अच्छा चल रहा है। बैंक निफ्टी अड़तालीस हज़ार नौ सौ पर है। क्रेडिट ग्रोथ पंद्रह प्रतिशत से ज़्यादा है और एन.पी.ए. कम हो रहे हैं। एस.बी.आई. और एच.डी.एफ.सी. बैंक टॉप पिक्स हैं। लेकिन इंटरेस्ट रेट साइकल टर्न हो सकता है।'
+      },
+      gold_silver: {
+        title: 'Sona-Chandi ka Bhav',
+        price: 'Gold: ₹72,450/10g', change: '+0.4%', changeUp: true,
+        pe: 'Silver: ₹85,200/kg', weekRange: '₹62,000 – ₹74,500 (Gold)', marketCap: 'MCX Gold: ₹72,680',
+        strength: 'Global tension mein gold safe haven hai. Central banks gold kharid rahe hain.',
+        risk: 'Dollar strong hone par gold gir sakta hai. Silver mein zyada volatility hai.',
+        verdict: 'Gold: steady growth | Silver: high risk-high reward',
+        verdictColor: '#B8860B',
+        speakText: 'सोने का भाव आज बहत्तर हज़ार चार सौ पचास रुपये प्रति दस ग्राम है। चांदी पचासी हज़ार दो सौ रुपये प्रति किलो। ग्लोबल टेंशन में गोल्ड सेफ हेवन माना जाता है। सेंट्रल बैंक गोल्ड खरीद रहे हैं। लेकिन डॉलर स्ट्रॉन्ग होने पर गोल्ड गिर सकता है। सिल्वर में ज़्यादा वोलैटिलिटी है।'
+      }
+    }
+  },
   chaiPeCharcha: {
     speakText: 'नमस्कार दोस्तों, आज की चाय पे चर्चा में आपका स्वागत है। आज मार्केट थोड़ा शरमाया, सेंसेक्स दो सौ अंक ऊपर खुला लेकिन दोपहर तक फ्लैट हो गया। टाटा मोटर्स ने आज अच्छा परफॉर्म किया, ई.वी. सेल्स के नए आंकड़ों के बाद तीन प्रतिशत ऊपर। आई.टी. सेक्टर में थोड़ा दबाव रहा, टी.सी.एस. और इन्फ़ोसिस दोनों एक प्रतिशत नीचे। बैंकिंग सेक्टर ने मार्केट को सहारा दिया। एस.बी.आई. और एच.डी.एफ.सी. बैंक दोनों हरे निशान में बंद हुए। सोने का भाव बासठ हज़ार चार सौ पचास पर स्थिर है। कुल मिलाकर आज का दिन ठीक-ठाक रहा, कल के लिए एक्सपर्ट्स का कहना है कि मार्केट रेंज-बाउंड रहेगा। तो दोस्तों, अपना रिसर्च करते रहिए और पैनिक मत कीजिए। कल फिर मिलेंगे चाय पे चर्चा में!'
   }
@@ -627,10 +708,11 @@ async function goToState(state) {
       await addMsg('ai', 'Aaj aapke liye kya dekhein?');
       await addRaw(`
         <div class="chips">
-          <div class="chip chip-rich" onclick="goToState('time_machine')">Time Machine<span class="chip-desc">Agar pehle invest kiya hota toh?</span></div>
           <div class="chip chip-rich" onclick="goToState('portfolio')">Mera Portfolio<span class="chip-desc">Apne 4 stocks ka haal dekho</span></div>
-          <div class="chip chip-rich" onclick="goToState('challenge')">₹100 ka Challenge<span class="chip-desc">Chhoti rakam, bada seekh</span></div>
           <div class="chip chip-rich" onclick="goToState('chai_pe_charcha')">Chai pe Charcha<span class="chip-desc">2 min mein aaj ka market suno</span></div>
+          <div class="chip chip-rich" onclick="goToState('challenge')">₹100 ka Challenge<span class="chip-desc">Chhoti rakam, bada seekh</span></div>
+          <div class="chip chip-rich" onclick="goToState('time_machine')">Time Machine<span class="chip-desc">Agar pehle invest kiya hota toh?</span></div>
+          <div class="chip chip-rich" onclick="goToState('stock_dive')">Stock Deep Dive<span class="chip-desc">Kisi stock ya sector ko samjho</span></div>
         </div>
       `, 200);
       break;
@@ -644,7 +726,7 @@ async function goToState(state) {
       await addRaw(`
         <div class="chips">
           <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
-          <div class="chip" onclick="goToState('challenge')">100 ka Challenge</div>
+          <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
         </div>
       `, 400);
       break;
@@ -657,9 +739,9 @@ async function goToState(state) {
       await addMsg('ai', 'Kisi bhi stock par tap karo — detail mein batata hoon. Ya bolo koi sawaal!');
       await addRaw(`
         <div class="chips">
-          <div class="chip" onclick="goToState('challenge')">100 ka Challenge</div>
+          <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
+          <div class="chip" onclick="showStockDiveResult('gold_silver')">Sona-Chandi ka bhav</div>
           <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
-          <div class="chip" onclick="goToState('sip_calc')">SIP Calculator</div>
         </div>
       `, 400);
       break;
@@ -684,9 +766,16 @@ async function goToState(state) {
       await addRaw(`
         <div class="chips">
           <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
-          <div class="chip" onclick="goToState('sip_calc')">SIP Calculator</div>
+          <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
         </div>
       `, 400);
+      break;
+
+    case 'stock_dive':
+      await addMsg('user', 'Stock Deep Dive dikhao');
+      showTyping(); await wait(700); hideTyping();
+      await addMsg('ai', 'Kisko samajhna hai? Ek stock ya poora sector — aap chuniye:');
+      await addRaw(buildStockDiveCard(), 300, true);
       break;
 
     case 'sip_calc':
@@ -698,7 +787,8 @@ async function goToState(state) {
       await addRaw(`
         <div class="chips">
           <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
-          <div class="chip" onclick="goToState('voice_query')">Kuch poochho</div>
+          <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
+          <div class="chip" onclick="showStockDiveResult('gold_silver')">Sona-Chandi ka bhav</div>
         </div>
       `, 400);
       break;
@@ -886,18 +976,19 @@ function showChallengeResult(stock) {
           <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--radius-pill);background:${data.riskBg};color:${data.riskColor}">${data.riskLabel}</span>
         </div>
         <div class="cr-disclaimer">Yeh estimate hai, guarantee nahi. Invest karne se pehle apna research zaroor karein.</div>
+        <button class="cr-listen-btn" onclick="elevenLabsTTS(STOCKS_DATA.challenge['${stock}'].speakText); showToast('Sun rahe hain...')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          Hindi mein suniye
+        </button>
       </div>
     `, 200, true);
-
-    // Speak the result
-    elevenLabsTTS(data.speakText);
 
     await wait(600);
     await addRaw(`
       <div class="chips">
         <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
+        <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
         <div class="chip" onclick="goToState('sip_calc')">SIP Calculator</div>
-        <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
       </div>
     `, 400);
   });
@@ -960,6 +1051,75 @@ function toggleChai() {
   }
 }
 
+// === Build Stock Deep Dive Card ===
+function buildStockDiveCard() {
+  const opts = STOCKS_DATA.stockDive.options.map(o => `
+    <div class="sd-opt" onclick="showStockDiveResult('${o.id}')">
+      <div class="sd-opt-icon">${o.icon}</div>
+      <div class="sd-opt-info">
+        <h4>${o.name}</h4>
+      </div>
+      <span class="sd-opt-tag" style="background:${o.tagBg};color:${o.tagColor}">${o.tag}</span>
+    </div>
+  `).join('');
+
+  return `<div class="sd-card">
+    <div class="sd-title">Stock Deep Dive</div>
+    <div class="sd-sub">Kisi bhi stock ya sector ki sachhai — simple Hindi mein</div>
+    <div class="sd-options">${opts}</div>
+  </div>`;
+}
+
+function showStockDiveResult(id) {
+  const data = STOCKS_DATA.stockDive.results[id];
+  const opt = STOCKS_DATA.stockDive.options.find(o => o.id === id);
+
+  addMsg('user', `${opt.name} ke baare mein batao`).then(async () => {
+    showTyping(); await wait(800); hideTyping();
+    await addRaw(`
+      <div class="sd-result">
+        <div class="sd-result-header">
+          <div class="sd-result-title">${data.title}</div>
+          <div class="sd-result-price">
+            ${data.price}
+            <div class="sd-result-change" style="color:${data.changeUp ? 'var(--sparkle-50)' : 'var(--error)'}">${data.change}</div>
+          </div>
+        </div>
+        <div class="sd-meta">
+          <div class="sd-meta-item">${id === 'gold_silver' ? 'Silver' : 'P/E Ratio'}<span>${data.pe}</span></div>
+          <div class="sd-meta-item">52W Range<span>${data.weekRange}</span></div>
+        </div>
+        <div class="sd-section sd-section-green">
+          <div class="sd-section-label">👍 Achha kya hai</div>
+          <div class="sd-section-text">${data.strength}</div>
+        </div>
+        <div class="sd-section sd-section-red">
+          <div class="sd-section-label">⚠️ Dhyan rakhein</div>
+          <div class="sd-section-text">${data.risk}</div>
+        </div>
+        <div class="sd-verdict">
+          <div class="sd-verdict-text" style="color:${data.verdictColor}">${data.verdict}</div>
+        </div>
+        <button class="sd-listen-btn" onclick="elevenLabsTTS(STOCKS_DATA.stockDive.results['${id}'].speakText); showToast('Sun rahe hain...')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          Hindi mein suniye
+        </button>
+      </div>
+    `, 200, true);
+
+    await wait(600);
+    // Suggest prompts — include gold/silver if they haven't picked it
+    const goldChip = id !== 'gold_silver' ? '<div class="chip" onclick="showStockDiveResult(\'gold_silver\')">Sona-Chandi ka bhav</div>' : '';
+    await addRaw(`
+      <div class="chips">
+        ${goldChip}
+        <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
+        <div class="chip" onclick="goToState('sip_calc')">SIP Calculator</div>
+      </div>
+    `, 400);
+  });
+}
+
 // === Build SIP Calculator Card ===
 function buildSIPCard() {
   return `<div class="sip-card">
@@ -1004,6 +1164,8 @@ function calculateSIP() {
   }
 
   const resultEl = document.getElementById('sipResult');
+  window._lastSIPSpeak = 'अमित भाई, अगर आप हर महीने ' + monthly + ' रुपये ' + years + ' साल तक लगाते हैं, तो कुल ' + totalInvested + ' रुपये लगेंगे। बारह प्रतिशत रिटर्न पर यह बढ़कर लगभग ' + futureValue + ' रुपये हो सकते हैं। यानी ' + gain + ' रुपये का फायदा।';
+
   resultEl.innerHTML = `
     <div class="sip-coins">${coins.join('')}</div>
     <div class="sip-result">
@@ -1011,12 +1173,12 @@ function calculateSIP() {
       <div class="sip-result-amount">₹${futureValue.toLocaleString()}</div>
       <div class="sip-result-gain">Lagaya: ₹${totalInvested.toLocaleString()} | Profit: ₹${gain.toLocaleString()}</div>
     </div>
+    <button class="sip-listen-btn" onclick="elevenLabsTTS(window._lastSIPSpeak); showToast('SIP result sun rahe hain...')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+      Suniye
+    </button>
   `;
   scrollToBottom();
-
-  // Speak the result
-  const speakText = `अमित भाई, अगर आप हर महीने ${monthly} रुपये ${years} साल तक लगाते हैं, तो कुल ${totalInvested} रुपये लगेंगे। बारह प्रतिशत रिटर्न पर यह बढ़कर लगभग ${futureValue} रुपये हो सकते हैं। यानी ${gain} रुपये का फायदा। ध्यान रहे, यह एस्टीमेट है, असल रिटर्न कम या ज़्यादा हो सकता है।`;
-  elevenLabsTTS(speakText);
 }
 
 // === Build Voice Query Card ===
@@ -1071,8 +1233,8 @@ async function simulateVoiceQuery() {
   await addRaw(`
     <div class="chips">
       <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
-      <div class="chip" onclick="goToState('sip_calc')">SIP Calculator</div>
-      <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
+      <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
+      <div class="chip" onclick="showStockDiveResult('gold_silver')">Sona-Chandi ka bhav</div>
     </div>
   `, 400);
 }
@@ -1095,12 +1257,17 @@ function handleTextInput() {
     goToState('chai_pe_charcha');
   } else if (lowerText.includes('100') || lowerText.includes('challenge')) {
     goToState('challenge');
+  } else if (lowerText.includes('gold') || lowerText.includes('sona') || lowerText.includes('chandi') || lowerText.includes('silver')) {
+    addMsg('user', text).then(() => showStockDiveResult('gold_silver'));
+  } else if (lowerText.includes('sector') || lowerText.includes('deep dive') || lowerText.includes('banking') || lowerText.includes('it sector')) {
+    goToState('stock_dive');
   } else {
     addMsg('user', text).then(async () => {
       showTyping(); await wait(600); hideTyping();
-      await addMsg('ai', 'Amit bhai, abhi mujhe sirf popular stocks ki jaankari hai. Kya aap portfolio dekhna chahenge ya Chai pe Charcha sunna chahenge?');
+      await addMsg('ai', 'Amit bhai, iske baare mein abhi jaankari nahi hai. Yeh try karo:');
       await addRaw(`
         <div class="chips">
+          <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
           <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
           <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
         </div>
