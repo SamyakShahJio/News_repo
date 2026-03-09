@@ -16,6 +16,8 @@
   --primary-30: #9999ff;
   --primary-50: #3535f3;
   --primary-60: #000093;
+  --primary-70: #00004c;
+  --primary-80: #010029;
   --secondary-20: #fef7e9;
   --secondary-40: #ffd947;
   --secondary-50: #f7ab20;
@@ -63,15 +65,7 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 }
 .header-info h3 { font-size: 16px; font-weight: 700; color: var(--grey-100); line-height: 1.2; }
 .header-info span { font-size: 12px; color: var(--sparkle-50); font-weight: 500; }
-.header-lang {
-  margin-left: auto; display: flex; gap: 4px;
-}
-.lang-btn {
-  padding: 4px 10px; border-radius: var(--radius-pill); border: 1.5px solid var(--grey-40);
-  font-family: 'JioType', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer;
-  background: var(--white); color: var(--grey-80); transition: all 0.2s;
-}
-.lang-btn.active { background: var(--primary-50); color: var(--white); border-color: var(--primary-50); }
+/* lang toggle removed — single-language Hindi prototype */
 
 /* Chat area */
 .chat-body { display: flex; flex-direction: column; height: calc(100vh - 56px - 88px); }
@@ -149,7 +143,7 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
   padding: 20px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s;
 }
 .tm-card:active { transform: scale(0.97); }
-.tm-card-green { background: linear-gradient(135deg, #e8faf7 0%, #d4f5ef 100%); border: 1.5px solid rgba(30,204,176,0.2); }
+.tm-card-green { background: linear-gradient(135deg, var(--sparkle-20) 0%, rgba(30,204,176,0.12) 100%); border: 1.5px solid rgba(30,204,176,0.2); }
 .tm-card-red { background: rgba(250,47,64,0.06); border: 1.5px solid rgba(250,47,64,0.15); }
 .tm-stock-name { font-size: 13px; font-weight: 700; color: var(--text-low); text-transform: uppercase; letter-spacing: 0.5px; }
 .tm-amount-row { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; }
@@ -179,7 +173,7 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 
 /* Portfolio card */
 .portfolio-card {
-  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(180deg, var(--primary-80) 0%, var(--primary-70) 50%, var(--primary-60) 100%);
   border-radius: var(--radius-lg); padding: 20px; color: var(--white);
 }
 .pf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -293,7 +287,7 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 
 /* Chai pe Charcha audio player */
 .chai-card {
-  background: linear-gradient(135deg, var(--secondary-20) 0%, #fff8ee 100%);
+  background: linear-gradient(135deg, var(--secondary-20) 0%, var(--white) 100%);
   border-radius: var(--radius-lg); padding: 20px; border: 1.5px solid rgba(247,171,32,0.2);
 }
 .chai-header { display: flex; align-items: center; gap: 12px; }
@@ -422,7 +416,7 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 .chip:hover, .chip:active { background: var(--primary-50); color: var(--white); }
 .chip:hover .chip-desc, .chip:active .chip-desc { color: rgba(255,255,255,0.85); }
 .chip-rich {
-  padding: 10px 16px; border-radius: 16px; text-align: left; display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 16px; border-radius: var(--radius-lg); text-align: left; display: flex; flex-direction: column; gap: 2px;
 }
 .chip-desc { font-weight: 400; font-size: 11px; color: var(--grey-80); line-height: 1.3; transition: color 0.2s; }
 .chip-disabled { opacity: 0.38; pointer-events: none; border-color: var(--grey-60); color: var(--grey-60); }
@@ -575,6 +569,64 @@ function playAudioFromUrl(url, onended) {
 
 function stopCurrentAudio() {
   if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; isSpeaking = false; }
+  resetActiveTTSBtn();
+}
+
+// === TTS Play/Pause Toggle ===
+const SPEAKER_ICON = '<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>';
+const PAUSE_ICON = '<path d="M6 4h4v16H6zm8 0h4v16h-4z"/>';
+let _activeTTSBtnId = null;
+let _activeTTSLabel = '';
+
+function toggleTTSBtn(btnId, text, label) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  const svg = btn.querySelector('.tts-icon');
+  const lbl = btn.querySelector('.tts-label');
+
+  // Currently playing this button → pause
+  if (_activeTTSBtnId === btnId && currentAudio && !currentAudio.paused) {
+    currentAudio.pause();
+    if (svg) svg.innerHTML = SPEAKER_ICON;
+    if (lbl) lbl.textContent = label;
+    showToast('Ruka diya');
+    return;
+  }
+
+  // This button was paused → resume
+  if (_activeTTSBtnId === btnId && currentAudio && currentAudio.paused && currentAudio.currentTime > 0) {
+    currentAudio.play();
+    if (svg) svg.innerHTML = PAUSE_ICON;
+    if (lbl) lbl.textContent = 'Ruko';
+    showToast('Phir se sun rahe hain...');
+    return;
+  }
+
+  // New playback — stop previous and start fresh
+  resetActiveTTSBtn();
+  _activeTTSBtnId = btnId;
+  _activeTTSLabel = label;
+  if (svg) svg.innerHTML = PAUSE_ICON;
+  if (lbl) lbl.textContent = 'Ruko';
+  showToast('Sun rahe hain...');
+
+  elevenLabsTTS(text, () => {
+    resetActiveTTSBtn();
+  });
+}
+
+function resetActiveTTSBtn() {
+  if (_activeTTSBtnId) {
+    const btn = document.getElementById(_activeTTSBtnId);
+    if (btn) {
+      const svg = btn.querySelector('.tts-icon');
+      const lbl = btn.querySelector('.tts-label');
+      if (svg) svg.innerHTML = SPEAKER_ICON;
+      if (lbl) lbl.textContent = _activeTTSLabel;
+    }
+    _activeTTSBtnId = null;
+    _activeTTSLabel = '';
+  }
 }
 
 // === Chat Helpers ===
@@ -685,6 +737,7 @@ const STOCKS_DATA = {
   ],
   portfolio: {
     invested: 15000, current: 16340, gainPct: 8.9,
+    speakText: 'अमित भाई, आपका पोर्टफोलियो। आपने कुल पंद्रह हज़ार रुपये लगाए हैं और आज इसकी वैल्यू सोलह हज़ार तीन सौ चालीस रुपये है। आठ पॉइंट नौ प्रतिशत का प्रॉफिट है, यानी एक हज़ार तीन सौ चालीस रुपये। इन्फ़ोसिस और टाटा मोटर्स अच्छा कर रहे हैं। वोडाफोन आइडिया में नुकसान है, सोलह प्रतिशत नीचे।',
     stocks: [
       { name: 'Infosys', invested: 4200, current: 4520, change: '+7.6%', up: true,
         summary: 'Pichle hafte 3% upar. Q3 results aaye — revenue guidance badhaaya.',
@@ -715,10 +768,10 @@ const STOCKS_DATA = {
   },
   stockDive: {
     options: [
-      { id: 'reliance', name: 'Reliance Industries', icon: '🏭', tag: 'Oil to Jio', tagColor: 'var(--primary-50)', tagBg: 'var(--primary-20)' },
-      { id: 'it_sector', name: 'IT Sector', icon: '💻', tag: 'TCS, Infy, Wipro', tagColor: 'var(--sparkle-50)', tagBg: 'var(--sparkle-20)' },
-      { id: 'banking', name: 'Banking Sector', icon: '🏦', tag: 'SBI, HDFC, ICICI', tagColor: 'var(--secondary-50)', tagBg: 'var(--secondary-20)' },
-      { id: 'gold_silver', name: 'Sona-Chandi', icon: '🥇', tag: 'Gold & Silver', tagColor: 'var(--secondary-60)', tagBg: 'var(--secondary-20)' }
+      { id: 'reliance', name: 'Reliance Industries', icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="var(--primary-50)"><path d="M2 20h20v2H2v-2zm2-2h2V8l4 2V6l4 2V2h6v16H4z"/></svg>', tag: 'Oil to Jio', tagColor: 'var(--primary-50)', tagBg: 'var(--primary-20)' },
+      { id: 'it_sector', name: 'IT Sector', icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="var(--sparkle-50)"><path d="M20 18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>', tag: 'TCS, Infy, Wipro', tagColor: 'var(--sparkle-50)', tagBg: 'var(--sparkle-20)' },
+      { id: 'banking', name: 'Banking Sector', icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="var(--secondary-50)"><path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"/></svg>', tag: 'SBI, HDFC, ICICI', tagColor: 'var(--secondary-50)', tagBg: 'var(--secondary-20)' },
+      { id: 'gold_silver', name: 'Sona-Chandi', icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="var(--secondary-60)"><circle cx="12" cy="12" r="10"/><text x="12" y="16" text-anchor="middle" fill="white" font-size="12" font-weight="700">₹</text></svg>', tag: 'Gold & Silver', tagColor: 'var(--secondary-60)', tagBg: 'var(--secondary-20)' }
     ],
     results: {
       reliance: {
@@ -945,22 +998,22 @@ function buildMarketSummaryCard() {
     <div class="ms-indices">${indicesHTML}</div>
 
     <div class="ms-section">
-      <div class="ms-section-title">📈 Aaj ke sitare</div>
+      <div class="ms-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--success)"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6.01 4 4 6.3-6.29L22 12V6z"/></svg> Aaj ke sitare</div>
       ${gainersHTML}
     </div>
 
     <div class="ms-section">
-      <div class="ms-section-title">📉 Aaj gire</div>
+      <div class="ms-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--error)"><path d="M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6.01 4-4 6.3 6.29L22 12v6z"/></svg> Aaj gire</div>
       ${losersHTML}
     </div>
 
     <div class="ms-section">
-      <div class="ms-section-title">🏭 Sectors</div>
+      <div class="ms-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M2 20h20v2H2v-2zm2-2h2V8l4 2V6l4 2V2h6v16H4z"/></svg> Sectors</div>
       <div class="ms-sectors">${sectorsHTML}</div>
     </div>
 
     <div class="ms-section">
-      <div class="ms-section-title">🏦 FII / DII</div>
+      <div class="ms-section-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"/></svg> FII / DII</div>
       <div class="ms-fii-row">
         <div class="ms-fii-card ${fii.sell ? 'ms-fii-sell' : 'ms-fii-buy'}">
           <div class="ms-fii-label">Videshi (FII)</div>
@@ -974,7 +1027,7 @@ function buildMarketSummaryCard() {
         </div>
       </div>
       <div class="ms-gold-row">
-        <div class="ms-gold-icon">🥇</div>
+        <div class="ms-gold-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--secondary-50)"><circle cx="12" cy="12" r="10"/><text x="12" y="16" text-anchor="middle" fill="var(--white)" font-size="12" font-weight="700" font-family="JioType">₹</text></svg></div>
         <div><div class="ms-gold-label">Sona</div></div>
         <div class="ms-gold-price">${ms.gold}</div>
         <div class="ms-gold-change">${ms.goldChange}</div>
@@ -982,9 +1035,9 @@ function buildMarketSummaryCard() {
     </div>
 
     <div class="ms-section" style="text-align:center">
-      <button class="ms-listen-btn" onclick="elevenLabsTTS(STOCKS_DATA.marketSummary.speakText); showToast('Bazaar ka haal sun rahe hain...')">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-        Poora haal suniye — 30 sec
+      <button class="ms-listen-btn" id="tts-ms" onclick="toggleTTSBtn('tts-ms', STOCKS_DATA.marketSummary.speakText, 'Poora haal suniye — 30 sec')">
+        <svg class="tts-icon" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        <span class="tts-label">Poora haal suniye — 30 sec</span>
       </button>
     </div>
   </div>`;
@@ -1054,9 +1107,9 @@ function buildPortfolioCard() {
   return `<div class="portfolio-card">
     <div class="pf-header">
       <div class="pf-label">Amit ka Portfolio</div>
-      <div class="pf-listen-btn" onclick="speakPortfolioSummary()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-        <span>Suniye</span>
+      <div class="pf-listen-btn" id="tts-pf" onclick="toggleTTSBtn('tts-pf', STOCKS_DATA.portfolio.speakText, 'Suniye')">
+        <svg class="tts-icon" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        <span class="tts-label">Suniye</span>
       </div>
     </div>
     <div class="pf-invested">Lagaya: ₹${pf.invested.toLocaleString()}</div>
@@ -1071,12 +1124,7 @@ function buildPortfolioCard() {
   </div>`;
 }
 
-function speakPortfolioSummary() {
-  const pf = STOCKS_DATA.portfolio;
-  const text = `अमित भाई, आपका पोर्टफोलियो। आपने कुल पंद्रह हज़ार रुपये लगाए हैं और आज इसकी वैल्यू सोलह हज़ार तीन सौ चालीस रुपये है। आठ पॉइंट नौ प्रतिशत का प्रॉफिट है, यानी एक हज़ार तीन सौ चालीस रुपये। इन्फ़ोसिस और टाटा मोटर्स अच्छा कर रहे हैं। वोडाफोन आइडिया में नुकसान है, सोलह प्रतिशत नीचे।`;
-  elevenLabsTTS(text);
-  showToast('Portfolio summary sun rahe hain...');
-}
+// speakPortfolioSummary now handled via toggleTTSBtn with STOCKS_DATA.portfolio.speakText
 
 function openStockDetail(idx) {
   const s = STOCKS_DATA.portfolio.stocks[idx];
@@ -1097,18 +1145,14 @@ function openStockDetail(idx) {
       <div class="bs-stat-row"><span class="bs-stat-label">52W High / Low</span><span class="bs-stat-value">₹${d.weekHigh} / ₹${d.weekLow}</span></div>
       <div class="bs-stat-row" style="border:none"><span class="bs-stat-label">Analyst Rating</span><span class="bs-stat-value">${d.analystRating}</span></div>
     </div>
-    <button class="bs-speak-btn" onclick="speakStockDetail(${idx})">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 15a3 3 0 003-3V5a3 3 0 00-6 0v7a3 3 0 003 3zm6-5a1 1 0 00-1 1v1a5 5 0 11-10 0v-1a1 1 0 10-2 0v1a7 7 0 1014 0v-1a1 1 0 00-1-1z"/></svg>
-      <span>Hindi mein suniye</span>
+    <button class="bs-speak-btn" id="tts-bs" onclick="toggleTTSBtn('tts-bs', STOCKS_DATA.portfolio.stocks[${idx}].speakText, 'Hindi mein suniye')">
+      <svg class="tts-icon" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+      <span class="tts-label">Hindi mein suniye</span>
     </button>
   `);
 }
 
-function speakStockDetail(idx) {
-  const s = STOCKS_DATA.portfolio.stocks[idx];
-  elevenLabsTTS(s.speakText);
-  showToast(`${s.name} ki detail sun rahe hain...`);
-}
+// speakStockDetail now handled via toggleTTSBtn with STOCKS_DATA.portfolio.stocks[idx].speakText
 
 // === Build ₹100 Challenge Card ===
 function buildChallengeCard() {
@@ -1171,9 +1215,9 @@ function showChallengeResult(stock) {
           <span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:var(--radius-pill);background:${data.riskBg};color:${data.riskColor}">${data.riskLabel}</span>
         </div>
         <div class="cr-disclaimer">Yeh estimate hai, guarantee nahi. Invest karne se pehle apna research zaroor karein.</div>
-        <button class="cr-listen-btn" onclick="elevenLabsTTS(STOCKS_DATA.challenge['${stock}'].speakText); showToast('Sun rahe hain...')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-          Hindi mein suniye
+        <button class="cr-listen-btn" id="tts-cr" onclick="toggleTTSBtn('tts-cr', STOCKS_DATA.challenge['${stock}'].speakText, 'Hindi mein suniye')">
+          <svg class="tts-icon" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <span class="tts-label">Hindi mein suniye</span>
         </button>
       </div>
     `, 200, true);
@@ -1285,19 +1329,19 @@ function showStockDiveResult(id) {
           <div class="sd-meta-item">52W Range<span>${data.weekRange}</span></div>
         </div>
         <div class="sd-section sd-section-green">
-          <div class="sd-section-label">👍 Achha kya hai</div>
+          <div class="sd-section-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--success)" style="vertical-align:middle"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> Achha kya hai</div>
           <div class="sd-section-text">${data.strength}</div>
         </div>
         <div class="sd-section sd-section-red">
-          <div class="sd-section-label">⚠️ Dhyan rakhein</div>
+          <div class="sd-section-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--warning)" style="vertical-align:middle"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> Dhyan rakhein</div>
           <div class="sd-section-text">${data.risk}</div>
         </div>
         <div class="sd-verdict">
           <div class="sd-verdict-text" style="color:${data.verdictColor}">${data.verdict}</div>
         </div>
-        <button class="sd-listen-btn" onclick="elevenLabsTTS(STOCKS_DATA.stockDive.results['${id}'].speakText); showToast('Sun rahe hain...')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-          Hindi mein suniye
+        <button class="sd-listen-btn" id="tts-sd" onclick="toggleTTSBtn('tts-sd', STOCKS_DATA.stockDive.results['${id}'].speakText, 'Hindi mein suniye')">
+          <svg class="tts-icon" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <span class="tts-label">Hindi mein suniye</span>
         </button>
       </div>
     `, 200, true);
@@ -1368,9 +1412,9 @@ function calculateSIP() {
       <div class="sip-result-amount">₹${futureValue.toLocaleString()}</div>
       <div class="sip-result-gain">Lagaya: ₹${totalInvested.toLocaleString()} | Profit: ₹${gain.toLocaleString()}</div>
     </div>
-    <button class="sip-listen-btn" onclick="elevenLabsTTS(window._lastSIPSpeak); showToast('SIP result sun rahe hain...')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
-      Suniye
+    <button class="sip-listen-btn" id="tts-sip" onclick="toggleTTSBtn('tts-sip', window._lastSIPSpeak, 'Suniye')">
+      <svg class="tts-icon" width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+      <span class="tts-label">Suniye</span>
     </button>
   `;
   scrollToBottom();
