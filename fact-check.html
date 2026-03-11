@@ -799,8 +799,10 @@ async function selectMethod(method) {
     await addMsg('user', 'Yeh message aaya hai family group mein:');
     await wait(300);
 
-    // Show forwarded message card
-    addRaw(`
+    // Show forwarded message card (user-side)
+    const fwdDiv = document.createElement('div');
+    fwdDiv.className = 'msg msg-user fade-in';
+    fwdDiv.innerHTML = `
       <div class="fwd-card">
         <div class="fwd-header">
           <div class="fwd-fwd-icon">
@@ -817,7 +819,8 @@ async function selectMethod(method) {
           Forwarded many times
         </div>
       </div>
-    `, false);
+    `;
+    chatArea.appendChild(fwdDiv); scrollToBottom();
     await wait(500);
     startVerification();
 
@@ -862,7 +865,7 @@ async function voiceFlowContinue() {
   currentState = 'processing';
   await addMsg('user', 'Mujhe ek message aaya ki 2000 ke note band hone wale hain, RBI ne rule nikala hai &mdash; sach hai kya?');
   await wait(400);
-  startVerification();
+  await startVerification();
 }
 
 document.getElementById('voiceOverlay').addEventListener('click', function(e) {
@@ -1090,7 +1093,7 @@ async function sendCorrections() {
   await wait(300);
   showToast('Correction ' + selectedGroups.size + ' groups mein bhej diya!');
   await wait(500);
-  showFinalMessage();
+  await showFinalMessage();
 }
 
 function closeShareSheet() {
@@ -1104,7 +1107,7 @@ document.getElementById('shareOverlay').addEventListener('click', function(e) {
 async function declineCorrection() {
   await addMsg('user', 'Nahi, rehne do');
   await wait(300);
-  showFinalMessage();
+  await showFinalMessage();
 }
 
 async function showFinalMessage() {
