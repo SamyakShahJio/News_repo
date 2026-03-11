@@ -38,7 +38,8 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
 
 /* ===== APP HEADER ===== */
 .app-header { height: 56px; padding: 0 var(--sp-m); display: flex; align-items: center; gap: var(--sp-s); border-bottom: 1px solid var(--stroke-subtle); background: var(--white); position: relative; z-index: 80; flex-shrink: 0; }
-.app-header-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--primary-50); display: flex; align-items: center; justify-content: center; }
+.app-header-back { width: 36px; height: 36px; border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: center; background: var(--surface-ghost); border: none; cursor: pointer; flex-shrink: 0; }
+.app-header-back:active { opacity: 0.38; }
 .app-header-info h3 { font-size: 16px; font-weight: 700; color: var(--grey-100); line-height: 1.2; }
 .app-header-info span { font-size: 12px; color: var(--sparkle-50); font-weight: 500; }
 
@@ -227,7 +228,7 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
 <body>
 <div class="phone-frame">
   <div class="app-header">
-    <div class="app-header-avatar"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2a1 1 0 00-1 1v18a1 1 0 002 0V3a1 1 0 00-1-1zM4 9a1 1 0 00-1 1v4a1 1 0 102 0v-4a1 1 0 00-1-1zm4-3a1 1 0 00-1 1v10a1 1 0 102 0V7a1 1 0 00-1-1zm12 3a1 1 0 00-1 1v4a1 1 0 002 0v-4a1 1 0 00-1-1zm-4-3a1 1 0 00-1 1v10a1 1 0 002 0V7a1 1 0 00-1-1z"/></svg></div>
+    <button class="app-header-back" onclick="location.href='https://sunit1986.github.io/design-prototypes/news-tools.html'"><svg width="20" height="20" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
     <div class="app-header-info"><h3>JioBharatIQ</h3><span id="headerStatus">Online</span></div>
   </div>
 
