@@ -567,6 +567,26 @@ const ttsCache = new Map();
 let currentAudio = null;
 let isSpeaking = false;
 
+// Pre-fetch TTS audio in background (no playback) so it's instant when user clicks play
+function precacheTTS(text) {
+  const cacheKey = text.substring(0, 100) + '|' + HINDI_VOICE_ID;
+  if (ttsCache.has(cacheKey)) return; // already cached
+  fetch(`https://api.elevenlabs.io/v1/text-to-speech/${HINDI_VOICE_ID}`, {
+    method: 'POST',
+    headers: { 'xi-api-key': ELEVENLABS_API_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      text: text,
+      model_id: 'eleven_multilingual_v2',
+      voice_settings: { stability: 0.65, similarity_boost: 0.8, style: 0.2, use_speaker_boost: true }
+    })
+  }).then(res => {
+    if (!res.ok) throw new Error('precache fail');
+    return res.blob();
+  }).then(blob => {
+    ttsCache.set(cacheKey, URL.createObjectURL(blob));
+  }).catch(() => {}); // silent fail — will fetch on demand
+}
+
 async function elevenLabsTTS(text, onended = null) {
   const cacheKey = text.substring(0, 100) + '|' + HINDI_VOICE_ID;
   if (ttsCache.has(cacheKey)) {
@@ -882,15 +902,16 @@ async function goToState(state) {
         <div class="chips">
           <div class="chip chip-rich" onclick="goToState('market_summary')">Aaj ka Bazaar<span class="chip-desc">Sensex, Nifty aur poora haal</span></div>
           <div class="chip chip-rich" onclick="goToState('portfolio')">Mera Portfolio<span class="chip-desc">Apne 4 stocks ka haal dekho</span></div>
+          <div class="chip chip-rich" onclick="goToState('stock_dive')">Stock Deep Dive<span class="chip-desc">Kisi stock ya sector ko samjho</span></div>
           <div class="chip chip-rich chip-disabled">Chai pe Charcha<span class="chip-desc">Jaldi aayega</span></div>
           <div class="chip chip-rich chip-disabled">₹100 ka Challenge<span class="chip-desc">Jaldi aayega</span></div>
           <div class="chip chip-rich chip-disabled">Time Machine<span class="chip-desc">Jaldi aayega</span></div>
-          <div class="chip chip-rich" onclick="goToState('stock_dive')">Stock Deep Dive<span class="chip-desc">Kisi stock ya sector ko samjho</span></div>
         </div>
       `, 200);
       break;
 
     case 'market_summary':
+      precacheTTS(STOCKS_DATA.marketSummary.speakText);
       await addMsg('user', 'Aaj ka bazaar dikhao');
       showTyping(); await wait(800); hideTyping();
       await addMsg('ai', 'Aaj ka poora haal-chaal ek nazar mein — <strong>Amit bhai ke liye tayyar</strong>:');
@@ -921,6 +942,8 @@ async function goToState(state) {
     */
 
     case 'portfolio':
+      precacheTTS(STOCKS_DATA.portfolio.speakText);
+      STOCKS_DATA.portfolio.stocks.forEach(s => precacheTTS(s.speakText));
       await addMsg('user', 'Mera portfolio dikhao');
       showTyping(); await wait(700); hideTyping();
       await addRaw(buildPortfolioCard(), 200, true);
@@ -1383,6 +1406,7 @@ function buildStockDiveCard() {
 function showStockDiveResult(id) {
   const data = STOCKS_DATA.stockDive.results[id];
   const opt = STOCKS_DATA.stockDive.options.find(o => o.id === id);
+  precacheTTS(data.speakText);
 
   addMsg('user', `${opt.name} ke baare mein batao`).then(async () => {
     showTyping(); await wait(800); hideTyping();
