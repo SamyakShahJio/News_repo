@@ -123,104 +123,37 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
 .story-dot-active { background: var(--sparkle); }
 .story-dot-done { background: var(--sparkle); }
 
-/* === News Anchor Avatar === */
-.anchor-person {
-  display: flex; flex-direction: column; align-items: center; margin: 16px 0 12px;
-  position: relative;
+/* === Anchor Avatar (Static Image) === */
+.anchor-avatar-wrap {
+  display: flex; flex-direction: column; align-items: center; margin: 16px 0 8px;
 }
-.anchor-person-body {
-  position: relative; width: 120px; height: 150px;
+.anchor-person-img {
+  width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+  border: 3px solid var(--sparkle); transition: box-shadow 0.3s;
 }
-/* Head */
-.ap-head {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: linear-gradient(145deg, #d4a574, #c49464);
-  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  z-index: 2; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.avatar-speaking .anchor-person-img {
+  box-shadow: 0 0 0 6px rgba(30,204,176,0.2), 0 0 20px rgba(30,204,176,0.15);
+  animation: pulse-ring 1.5s ease-in-out infinite;
 }
-/* Hair */
-.ap-hair {
-  width: 68px; height: 34px; border-radius: 34px 34px 0 0;
-  background: #1a1a1a; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
-  z-index: 3;
-}
-/* Face */
-.ap-face { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 40px; height: 36px; z-index: 4; }
-/* Eyes */
-.ap-eye {
-  width: 6px; height: 6px; border-radius: 50%; background: #2c1810;
-  position: absolute; top: 8px;
-}
-.ap-eye-l { left: 6px; }
-.ap-eye-r { right: 6px; }
-/* Blink animation */
-@keyframes blink {
-  0%, 92%, 100% { transform: scaleY(1); }
-  96% { transform: scaleY(0.1); }
-}
-.ap-eye { animation: blink 4s ease-in-out infinite; }
-.ap-eye-r { animation-delay: 0.1s; }
-/* Mouth */
-.ap-mouth {
-  width: 10px; height: 4px; border-radius: 0 0 5px 5px;
-  background: #8b4513; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
-  transition: all 0.15s;
-}
-/* Lip sync when speaking */
-@keyframes lipSync {
-  0% { height: 4px; width: 10px; border-radius: 0 0 5px 5px; }
-  15% { height: 10px; width: 14px; border-radius: 50%; }
-  30% { height: 6px; width: 8px; border-radius: 50%; }
-  45% { height: 12px; width: 12px; border-radius: 50%; }
-  60% { height: 5px; width: 10px; border-radius: 0 0 5px 5px; }
-  75% { height: 10px; width: 14px; border-radius: 50%; }
-  90% { height: 7px; width: 9px; border-radius: 50%; }
-  100% { height: 4px; width: 10px; border-radius: 0 0 5px 5px; }
-}
-.avatar-speaking .ap-mouth {
-  animation: lipSync 0.6s ease-in-out infinite;
-  background: #6b3410;
-}
-.avatar-idle .ap-mouth {
-  height: 4px; width: 10px; animation: none;
-}
-/* Torso */
-.ap-torso {
-  width: 80px; height: 86px; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-  background: linear-gradient(180deg, #1a237e, #0d1642);
-  border-radius: 40px 40px 12px 12px; z-index: 1;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-/* Collar */
-.ap-collar {
-  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 30px; height: 12px;
-  border-left: 15px solid transparent; border-right: 15px solid transparent;
-  border-top: 12px solid #e8e8e8; z-index: 2;
-}
-/* Tie */
-.ap-tie {
-  width: 10px; height: 30px; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-  z-index: 3;
-}
-.ap-tie::before {
-  content: ''; position: absolute; top: 0; left: 0;
-  border-left: 5px solid transparent; border-right: 5px solid transparent;
-  border-top: 8px solid #c0392b;
-}
-.ap-tie::after {
-  content: ''; position: absolute; top: 7px; left: 1px;
-  width: 8px; height: 22px; background: #c0392b;
-  clip-path: polygon(0 0, 100% 0, 70% 100%, 30% 100%);
-}
-/* Glow ring when speaking */
-.avatar-speaking .ap-head {
-  box-shadow: 0 0 0 3px rgba(30,204,176,0.3), 0 0 16px rgba(30,204,176,0.15);
+.avatar-idle .anchor-person-img { box-shadow: none; animation: none; }
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(30,204,176,0.2); }
+  50% { box-shadow: 0 0 0 8px rgba(30,204,176,0.3), 0 0 24px rgba(30,204,176,0.1); }
 }
 .anchor-person-label {
   font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
-  color: var(--grey-60); margin-top: 8px;
+  color: var(--grey-60); margin-top: 6px;
 }
+
+/* === Follow-up Pills === */
+.followup-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.followup-pill {
+  padding: 6px 14px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600;
+  border: 1.5px solid var(--primary); color: var(--primary); background: var(--white);
+  cursor: pointer; transition: all 0.2s;
+}
+.followup-pill:hover { background: var(--primary); color: var(--white); }
+.pill-disabled { opacity: 0.38; pointer-events: none; border-color: var(--grey-60); color: var(--grey-60); }
 
 /* Thinking shimmer */
 .thinking-shimmer {
@@ -407,9 +340,19 @@ let currentAudio = null;
 let isSpeaking = false;
 let isPaused = false;
 
+// === Voice & Avatar Config per Style ===
+const VOICE_CONFIG = {
+  aakashvani: 'zT03pEAEi0VHKciJODfn',  // Raju
+  punjabi: 'RxnH5jCRKb1ez2lcmQC1'        // Punjabi voice
+};
+const AVATAR_IMAGES = {
+  aakashvani: 'https://raw.githubusercontent.com/SamyakShahJio/News_repo/main/assets/anchor-aakashvani.jpg',
+  punjabi: 'https://raw.githubusercontent.com/SamyakShahJio/News_repo/main/assets/anchor-punjabi.jpg'
+};
+
 // === Conversation Preferences ===
-let conversationStep = 0; // 1=topic, 2=language, 3=duration
-let userPreferences = { topic: null, language: null, duration: null };
+let conversationStep = 0; // 1=style, 2=topic, 3=duration
+let userPreferences = { style: null, topic: null, duration: null };
 
 async function elevenLabsTTS(text, onended = null) {
   const cacheKey = text + '|' + activeVoiceId;
@@ -498,7 +441,7 @@ function browserSpeak(text, rate = 0.9) {
 }
 
 function preCacheStories(fromIndex = 0) {
-  briefingStories.slice(fromIndex, fromIndex + 3).forEach(s => {
+  getActiveStories().slice(fromIndex, fromIndex + 3).forEach(s => {
     const k = s.speakText + '|' + activeVoiceId;
     if (ttsCache.has(k)) return;
     fetch(`https://api.elevenlabs.io/v1/text-to-speech/${activeVoiceId}`, {
@@ -574,7 +517,7 @@ async function handleSend() {
 
 function makeChips(options) {
   return `<div class="bubble bubble-ai"><div class="chips">${options.map(o =>
-    `<span class="chip" onclick="chipSelect('${o.value}')">${o.label}</span>`
+    `<span class="chip${o.disabled ? ' chip-disabled' : ''}" onclick="${o.disabled ? '' : `chipSelect('${o.value}')`}">${o.label}</span>`
   ).join('')}</div></div>`;
 }
 
@@ -585,50 +528,55 @@ function chipSelect(value) {
 }
 
 // === Preference Parsers ===
-function parseTopic(text) {
-  if (/aakashvani|radio|formal|shuddh|serious|classic/.test(text)) return 'aakashvani';
-  if (/business|vyapaar|bazaar|market|karobaar/.test(text)) return 'business';
-  if (/sport|khel|cricket|football/.test(text)) return 'sports';
-  if (/quick|headlines|jaldi|fast|short/.test(text)) return 'headlines';
+function parseStyle(text) {
+  if (/punjab|panjab|ਪੰਜਾਬ/.test(text)) return 'punjabi';
   return 'aakashvani';
 }
 
-function parseLanguage(text) {
-  if (/english|angrezi/.test(text)) return 'english';
-  if (/hinglish|mix|dono/.test(text)) return 'hinglish';
-  return 'hindi';
+function parseTopic(text) {
+  if (userPreferences.style === 'punjabi') {
+    if (/mandi|bhaav|rate|bhaa/.test(text)) return 'mandi';
+    if (/sport|khel|cricket|kabaddi/.test(text)) return 'sports';
+    return 'kisan';
+  }
+  if (/business|vyapaar|bazaar|market|karobaar/.test(text)) return 'business';
+  if (/sport|khel|cricket|football/.test(text)) return 'sports';
+  return 'hyperlocal';
 }
 
 function parseDuration(text) {
+  if (userPreferences.style === 'punjabi') {
+    if (/standard|7|saat/.test(text)) return 'standard';
+    return 'quick';
+  }
   if (/quick|2|do min|short|chhota/.test(text)) return 'quick';
-  if (/detail|15|pandrah|lamba|long|zyada/.test(text)) return 'detailed';
   return 'standard';
+}
+
+function getStyleAck(style) {
+  if (style === 'punjabi') return 'Balle balle! <strong>Punjabi andaaz</strong> mein khabrein suniye \u2014 apni mitti di khushboo wali!';
+  return 'Bahut accha! <strong>Aakashvani andaaz</strong> \u2014 shuddh Hindi mein gambheer samachar vaachan.';
 }
 
 function getTopicAck(topic) {
   const m = {
-    aakashvani: 'Bahut accha! <strong>Aakashvani andaaz</strong> \u2014 shuddh Hindi mein gambheer samachar vaachan. Classic pasand hai aapki!',
-    business: 'Vyapaar samachar pe focus \u2014 <strong>aapke kaam ki khabrein pehle!</strong>',
+    hyperlocal: '<strong>Hyper-local samachar</strong> \u2014 aapke shahar ki khabrein pehle!',
+    business: 'Vyapaar samachar pe focus \u2014 <strong>aapke kaam ki khabrein!</strong>',
     sports: 'Khel jagat ki taza khabrein \u2014 <strong>game on!</strong>',
-    headlines: 'Quick headlines \u2014 <strong>seedha aur saral!</strong>'
+    kisan: '<strong>Kisan khabrein</strong> \u2014 fasal, mausam te sarkari yojnavan!',
+    mandi: '<strong>Mandi Bhaav</strong> \u2014 taza rate te fasal di keemat!'
   };
-  return m[topic] || m.aakashvani;
-}
-
-function getLanguageAck(lang) {
-  const m = {
-    hindi: '<strong>Shuddh Hindi</strong> mein! Bilkul sahi.',
-    english: '<strong>English</strong> it is! Got it.',
-    hinglish: '<strong>Hinglish</strong> \u2014 best of both worlds!'
-  };
-  return m[lang] || m.hindi;
+  return m[topic] || m.hyperlocal;
 }
 
 function getDurationAck(dur) {
+  if (userPreferences.style === 'punjabi') {
+    if (dur === 'standard') return 'Changa ji, <strong>7 minute da standard briefing</strong> tayyar karda haan!';
+    return 'Theek hai, <strong>5 minute da quick briefing</strong> \u2014 jaldi ch sab kuch!';
+  }
   const m = {
     quick: 'Theek hai, <strong>2 minute ka quick briefing</strong> tayyar karta hoon!',
-    standard: 'Perfect, <strong>7 minute ka standard briefing</strong> \u2014 sab kuch cover hoga!',
-    detailed: '<strong>15 minute ka detailed briefing</strong> \u2014 har khabar pe gehrai se!'
+    standard: 'Perfect, <strong>7 minute ka standard briefing</strong> \u2014 sab kuch cover hoga!'
   };
   return m[dur] || m.standard;
 }
@@ -640,30 +588,49 @@ async function processPreferenceInput(text) {
   hideTyping();
 
   switch(conversationStep) {
-    case 1: // Topic
-      userPreferences.topic = parseTopic(lower);
+    case 1: // Style
+      userPreferences.style = parseStyle(lower);
+      activeVoiceId = VOICE_CONFIG[userPreferences.style] || VOICE_CONFIG.aakashvani;
       conversationStep = 2;
-      await addMsg('ai', getTopicAck(userPreferences.topic));
+      await addMsg('ai', getStyleAck(userPreferences.style));
       await wait(400);
-      await addMsg('ai', 'Aap kis bhasha mein sunna chahenge?');
-      await addRaw(makeChips([
-        { label: 'Hindi', value: 'hindi' },
-        { label: 'English', value: 'english' },
-        { label: 'Hinglish', value: 'hinglish' }
-      ]));
+
+      if (userPreferences.style === 'punjabi') {
+        await addMsg('ai', 'Kis tarah di khabrein sunni ne?');
+        await addRaw(makeChips([
+          { label: 'Kisan Khabrein', value: 'kisan' },
+          { label: 'Mandi Bhaav', value: 'mandi', disabled: true },
+          { label: 'Sports', value: 'sports', disabled: true }
+        ]));
+      } else {
+        await addMsg('ai', 'Kis tarah ke samachar sunna chahenge?');
+        await addRaw(makeChips([
+          { label: 'Hyper-local', value: 'hyperlocal' },
+          { label: 'Business', value: 'business', disabled: true },
+          { label: 'Sports', value: 'sports', disabled: true }
+        ]));
+      }
       break;
 
-    case 2: // Language
-      userPreferences.language = parseLanguage(lower);
+    case 2: // Topic
+      userPreferences.topic = parseTopic(lower);
       conversationStep = 3;
-      await addMsg('ai', getLanguageAck(userPreferences.language));
+      await addMsg('ai', getTopicAck(userPreferences.topic));
       await wait(400);
-      await addMsg('ai', 'Kitna lamba briefing chahiye?');
-      await addRaw(makeChips([
-        { label: 'Quick (2 min)', value: 'quick' },
-        { label: 'Standard (7 min)', value: 'standard' },
-        { label: 'Detailed (15 min)', value: 'detailed' }
-      ]));
+
+      if (userPreferences.style === 'punjabi') {
+        await addMsg('ai', 'Kitna lamba briefing chahiye?');
+        await addRaw(makeChips([
+          { label: 'Quick (5 min)', value: 'quick' },
+          { label: 'Standard (7 min)', value: 'standard', disabled: true }
+        ]));
+      } else {
+        await addMsg('ai', 'Kitna lamba briefing chahiye?');
+        await addRaw(makeChips([
+          { label: 'Standard (7 min)', value: 'standard' },
+          { label: 'Quick (2 min)', value: 'quick', disabled: true }
+        ]));
+      }
       break;
 
     case 3: // Duration
@@ -699,6 +666,11 @@ const briefingStories = [
     transcript: 'Aaj <strong>GST Parishad</strong> ki baithak mein vastra udyog par mahatvapurn charcha hone wali hai. Man-made fabrics par kar ki dar <strong>12% se 5%</strong> karne ka prastaav hai. Yadi yeh parit hota hai toh polyester stock par <strong>\u20B98-10 prati metre</strong> ka laabh ho sakta hai.',
     title: 'GST Vastra Udyog Samachar',
     hasDeepDive: true,
+    followUpPills: [
+      { label: 'GST ka asar kya hoga?', active: true },
+      { label: 'Vastra sector ke stocks?', active: false },
+      { label: 'Kab se laagu?', active: false }
+    ],
     deepDiveSpeakText: '\u0930\u093E\u091C\u0947\u0936 \u091C\u0940, \u0906\u0907\u090F \u0907\u0938\u0915\u094B \u0935\u093F\u0938\u094D\u0924\u093E\u0930 \u0938\u0947 \u0938\u092E\u091D\u0924\u0947 \u0939\u0948\u0902\u0964 \u091C\u0940.\u090F\u0938.\u091F\u0940. \u092A\u0930\u093F\u0937\u0926 \u092E\u0947\u0902 \u092A\u094D\u0930\u0938\u094D\u0924\u093E\u0935 \u0939\u0948 \u0915\u093F \u092E\u0948\u0928-\u092E\u0947\u0921 \u092B\u0948\u092C\u094D\u0930\u093F\u0915\u094D\u0938 \u092A\u0930 \u0915\u0930 \u0915\u0940 \u0926\u0930 \u092C\u093E\u0930\u0939 \u092A\u094D\u0930\u0924\u093F\u0936\u0924 \u0938\u0947 \u0918\u091F\u093E\u0915\u0930 \u092A\u093E\u0901\u091A \u092A\u094D\u0930\u0924\u093F\u0936\u0924 \u0915\u0940 \u091C\u093E\u090F\u0964 \u092F\u0926\u093F \u092F\u0939 \u092A\u093E\u0930\u093F\u0924 \u0939\u094B\u0924\u093E \u0939\u0948, \u0924\u094B \u0906\u092A\u0915\u0947 \u092A\u0949\u0932\u093F\u090F\u0938\u094D\u091F\u0930 \u0938\u094D\u091F\u0949\u0915 \u092A\u0930 \u0932\u0917\u092D\u0917 \u0906\u0920 \u0938\u0947 \u0926\u0938 \u0930\u0941\u092A\u092F\u0947 \u092A\u094D\u0930\u0924\u093F \u092E\u0940\u091F\u0930 \u0915\u093E \u0938\u0940\u0927\u093E \u0932\u093E\u092D \u0939\u094B\u0917\u093E\u0964 \u092F\u0939 \u092A\u094D\u0930\u0938\u094D\u0924\u093E\u0935 \u092E\u093E\u0930\u094D\u091A \u0915\u0940 \u092C\u0948\u0920\u0915 \u092E\u0947\u0902 \u091A\u0930\u094D\u091A\u093E \u0915\u0947 \u0932\u093F\u090F \u0930\u0916\u093E \u091C\u093E\u090F\u0917\u093E\u0964 \u0909\u0926\u094D\u092F\u094B\u0917 \u0938\u0902\u0918\u094B\u0902 \u0928\u0947 \u0907\u0938\u0915\u093E \u0938\u092E\u0930\u094D\u0925\u0928 \u0915\u093F\u092F\u093E \u0939\u0948\u0964 \u092A\u093F\u091B\u0932\u0947 \u0935\u0930\u094D\u0937 \u092D\u0940 \u0910\u0938\u093E \u092A\u094D\u0930\u0938\u094D\u0924\u093E\u0935 \u0906\u092F\u093E \u0925\u093E, \u0932\u0947\u0915\u093F\u0928 \u0930\u093E\u091C\u094D\u092F\u094B\u0902 \u0915\u0947 \u0935\u093F\u0930\u094B\u0927 \u092E\u0947\u0902 \u0930\u0941\u0915 \u0917\u092F\u093E \u0925\u093E\u0964 \u0907\u0938 \u092C\u093E\u0930 \u0935\u093E\u0923\u093F\u091C\u094D\u092F \u092E\u0902\u0924\u094D\u0930\u093E\u0932\u092F \u0928\u0947 \u092D\u0940 \u0938\u092E\u0930\u094D\u0925\u0928 \u0926\u093F\u092F\u093E \u0939\u0948, \u0907\u0938\u0932\u093F\u090F \u0907\u0938\u0915\u0947 \u092A\u093E\u0930\u093F\u0924 \u0939\u094B\u0928\u0947 \u0915\u0940 \u0938\u0902\u092D\u093E\u0935\u0928\u093E \u0905\u0927\u093F\u0915 \u0939\u0948\u0964',
     deepDiveTranscript: 'GST Parishad mein prastaav hai ki man-made fabrics par kar <strong>12% se 5%</strong> ki jaaye.<br><br>Polyester stock par <strong>\u20B98-10 prati metre</strong> ka seedha laabh hoga.<br><br>Yeh prastaav <strong>March ki baithak</strong> mein charcha ke liye rakhaa jayega. Udyog sanghon ne iska samarthan kiya hai.<br><br>Pichhle varsh bhi aisa prastaav aaya tha, lekin raajyon ke virodh mein ruk gaya. <strong>Is baar Vaanijya Mantralaya ne bhi samarthan diya hai.</strong>'
   },
@@ -739,11 +711,55 @@ const briefingStories = [
   }
 ];
 
+// === Punjabi Stories (Kisan Focus) ===
+const punjabiStories = [
+  {
+    category: 'KHABREIN',
+    badgeClass: 'badge-weather',
+    speakText: '\u0A38\u0A24 \u0A38\u0A4D\u0A30\u0A40 \u0A05\u0A15\u0A3E\u0A32\u0964 \u0A1C\u0A40\u0A13 \u0A28\u0A3F\u0A0A\u0A1C\u0A3C \u0A0F\u0A06\u0A08 \u0A35\u0A3F\u0A71\u0A1A \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A38\u0A41\u0A06\u0A17\u0A24 \u0A39\u0A48\u0964 \u0A05\u0A71\u0A1C \u0A2C\u0A41\u0A71\u0A27\u0A35\u0A3E\u0A30, \u0A2B\u0A71\u0A17\u0A23 \u0A26\u0A3E \u0A2E\u0A39\u0A40\u0A28\u0A3E\u0964 \u0A32\u0A41\u0A27\u0A3F\u0A06\u0A23\u0A47 \u0A35\u0A3F\u0A71\u0A1A \u0A05\u0A71\u0A1C \u0A26\u0A3E \u0A24\u0A3E\u0A2A\u0A2E\u0A3E\u0A28 \u0A2C\u0A71\u0A24\u0A40 \u0A21\u0A3F\u0A17\u0A30\u0A40 \u0A39\u0A48, \u0A26\u0A41\u0A2A\u0A39\u0A3F\u0A30 \u0A24\u0A4B\u0A02 \u0A2C\u0A3E\u0A05\u0A26 \u0A2E\u0A4C\u0A38\u0A2E \u0A38\u0A3E\u0A2B \u0A30\u0A39\u0A47\u0A17\u0A3E\u0964 \u0A06\u0A13 \u0A38\u0A41\u0A23\u0A40\u0A0F \u0A05\u0A71\u0A1C \u0A26\u0A40\u0A06\u0A02 \u0A16\u0A3E\u0A38 \u0A16\u0A2C\u0A30\u0A3E\u0A02\u0964',
+    transcript: '<strong>Sat Sri Akal!</strong> Jio News AI vich tuhadda suaagat hai. Aaj budhvaar, Phaggan da mahina. Ludhiane vich aaj da taapman <strong>30\u00B0C</strong>, duphir ton baad mausam saaf rahega. Aao suniye aaj dian khaas khabraan.',
+    title: 'Shuruat'
+  },
+  {
+    category: 'MANDI BHAAV',
+    badgeClass: 'badge-gold',
+    speakText: '\u0A2E\u0A70\u0A21\u0A40 \u0A2D\u0A3E\u0A05 \u0A26\u0A40 \u0A17\u0A71\u0A32\u0964 \u0A05\u0A71\u0A1C \u0A15\u0A23\u0A15 \u0A26\u0A3E \u0A2D\u0A3E\u0A05 \u0A26\u0A4B \u0A39\u0A1C\u0A3C\u0A3E\u0A30 \u0A24\u0A3F\u0A70\u0A28 \u0A38\u0A4C \u0A30\u0A41\u0A2A\u0A0F \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A15\u0A41\u0A07\u0A70\u0A1F\u0A32 \u0A39\u0A48\u0964 \u0A1D\u0A4B\u0A28\u0A47 \u0A26\u0A3E \u0A2D\u0A3E\u0A05 \u0A24\u0A47\u0A30\u0A3E\u0A02 \u0A38\u0A4C \u0A30\u0A41\u0A2A\u0A0F \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A15\u0A41\u0A07\u0A70\u0A1F\u0A32 \u0A39\u0A48\u0964 \u0A38\u0A30\u0A4D\u0A39\u0A4B\u0A02 \u0A26\u0A3E \u0A2D\u0A3E\u0A05 \u0A2A\u0A70\u0A1C \u0A39\u0A1C\u0A3C\u0A3E\u0A30 \u0A30\u0A41\u0A2A\u0A0F \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A15\u0A41\u0A07\u0A70\u0A1F\u0A32 \u0A39\u0A48\u0964 \u0A2E\u0A4C\u0A38\u0A2E \u0A1A\u0A70\u0A17\u0A3E \u0A30\u0A39\u0A3F\u0A06 \u0A24\u0A47 \u0A2D\u0A3E\u0A05 \u0A38\u0A25\u0A3F\u0A30 \u0A39\u0A28\u0964',
+    transcript: '<strong>Mandi Bhaav:</strong> Kanak \u2014 <strong>\u20B92,300/quintal</strong>. Jhone \u2014 <strong>\u20B91,300/quintal</strong>. Sarhon \u2014 <strong>\u20B95,000/quintal</strong>. Mausam changa te bhaav sthir hain.',
+    title: 'Mandi Bhaav'
+  },
+  {
+    category: 'KISAN YOJANA',
+    badgeClass: 'badge-local',
+    speakText: '\u0A15\u0A3F\u0A38\u0A3E\u0A28\u0A3E\u0A02 \u0A32\u0A08 \u0A16\u0A3E\u0A38 \u0A16\u0A2C\u0A30\u0964 \u0A2A\u0A70\u0A1C\u0A3E\u0A2C \u0A38\u0A30\u0A15\u0A3E\u0A30 \u0A28\u0A47 \u0A38\u0A4B\u0A32\u0A30 \u0A2A\u0A70\u0A2A \u0A2F\u0A4B\u0A1C\u0A28\u0A3E \u0A26\u0A3E \u0A10\u0A32\u0A3E\u0A28 \u0A15\u0A40\u0A24\u0A3E \u0A39\u0A48\u0964 \u0A07\u0A38 \u0A2F\u0A4B\u0A1C\u0A28\u0A3E \u0A35\u0A3F\u0A71\u0A1A \u0A15\u0A3F\u0A38\u0A3E\u0A28\u0A3E\u0A02 \u0A28\u0A42\u0A70 \u0A38\u0A4B\u0A32\u0A30 \u0A2A\u0A70\u0A2A \u0A32\u0A17\u0A3E\u0A09\u0A23 \u0A24\u0A47 \u0A38\u0A71\u0A24\u0A30 \u0A2A\u0A4D\u0A30\u0A24\u0A40\u0A36\u0A24 \u0A38\u0A2C\u0A38\u0A3F\u0A21\u0A40 \u0A26\u0A3F\u0A71\u0A24\u0A40 \u0A1C\u0A3E\u0A35\u0A47\u0A17\u0A40\u0964 \u0A2C\u0A3F\u0A1C\u0A32\u0A40 \u0A26\u0A3E \u0A2C\u0A3F\u0A71\u0A32 \u0A35\u0A40 \u0A18\u0A1F\u0A47\u0A17\u0A3E\u0964 \u0A05\u0A30\u0A1C\u0A3C\u0A40 \u0A2A\u0A3F\u0A70\u0A21 \u0A26\u0A47 \u0A2C\u0A32\u0A3E\u0A15 \u0A26\u0A2B\u0A3C\u0A24\u0A30 \u0A35\u0A3F\u0A71\u0A1A \u0A26\u0A3F\u0A13\u0964',
+    transcript: '<strong>Punjab sarkar</strong> ne Solar Pump Yojana da ailaan kita hai. Kisanaan nu solar pump lagaun te <strong>70% subsidy</strong> ditti jaavegi. <strong>Bijli da bill vi ghatega.</strong> Arzi pind de block daftar vich dio.',
+    title: 'Solar Pump Yojana',
+    hasDeepDive: true,
+    followUpPills: [
+      { label: 'Arzi kiven karni hai?', active: true },
+      { label: 'Kitni subsidy milegi?', active: false },
+      { label: 'Kede pind eligible ne?', active: false }
+    ],
+    deepDiveSpeakText: '\u0A38\u0A4B\u0A32\u0A30 \u0A2A\u0A70\u0A2A \u0A2F\u0A4B\u0A1C\u0A28\u0A3E \u0A2C\u0A3E\u0A30\u0A47 \u0A39\u0A4B\u0A30 \u0A1C\u0A3E\u0A23\u0A15\u0A3E\u0A30\u0A40\u0964 \u0A07\u0A38 \u0A2F\u0A4B\u0A1C\u0A28\u0A3E \u0A35\u0A3F\u0A71\u0A1A \u0A2A\u0A70\u0A1C \u0A0F\u0A15\u0A5C \u0A24\u0A4B\u0A02 \u0A18\u0A71\u0A1F \u0A1C\u0A3C\u0A2E\u0A40\u0A28 \u0A35\u0A3E\u0A32\u0A47 \u0A15\u0A3F\u0A38\u0A3E\u0A28 \u0A05\u0A30\u0A1C\u0A3C\u0A40 \u0A26\u0A47 \u0A38\u0A15\u0A26\u0A47 \u0A39\u0A28\u0964 \u0A2A\u0A3F\u0A70\u0A21 \u0A26\u0A47 \u0A2C\u0A32\u0A3E\u0A15 \u0A26\u0A2B\u0A3C\u0A24\u0A30 \u0A35\u0A3F\u0A71\u0A1A \u0A2B\u0A3E\u0A30\u0A2E \u0A2D\u0A30\u0A4B, \u0A1C\u0A3C\u0A2E\u0A40\u0A28 \u0A26\u0A47 \u0A15\u0A3E\u0A17\u0A1C\u0A3C\u0A3E\u0A24, \u0A06\u0A27\u0A3E\u0A30 \u0A15\u0A3E\u0A30\u0A21, \u0A24\u0A47 \u0A2C\u0A48\u0A02\u0A15 \u0A2A\u0A3E\u0A38\u0A2C\u0A41\u0A71\u0A15 \u0A26\u0A40 \u0A15\u0A3E\u0A2A\u0A40 \u0A28\u0A3E\u0A32 \u0A32\u0A48 \u0A15\u0A47 \u0A1C\u0A3E\u0A13\u0964 \u0A38\u0A2C\u0A38\u0A3F\u0A21\u0A40 \u0A38\u0A71\u0A24\u0A30 \u0A2A\u0A4D\u0A30\u0A24\u0A40\u0A36\u0A24 \u0A39\u0A48, \u0A2E\u0A24\u0A32\u0A2C \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A2F\u0A4B\u0A17\u0A26\u0A3E\u0A28 \u0A38\u0A3F\u0A30\u0A2B\u0A3C \u0A24\u0A40\u0A39 \u0A2A\u0A4D\u0A30\u0A24\u0A40\u0A36\u0A24 \u0A39\u0A4B\u0A35\u0A47\u0A17\u0A3E\u0964',
+    deepDiveTranscript: 'Solar Pump Yojana de details: <strong>5 ekad ton ghatt zameen</strong> waale kisaan arzi de sakde han.<br><br>Pind de <strong>block daftar</strong> vich form bharo \u2014 zameen de kagzaat, Aadhaar card, te bank passbook di copy naal le ke jao.<br><br>Subsidy <strong>70%</strong> hai. Baaki 30% kisaan nu dena pavega. <strong>Bijli da bill vi ghatega</strong> kyunki solar se free bijli milegi.'
+  },
+  {
+    category: 'SAMAAPTI',
+    badgeClass: 'badge-weather',
+    speakText: '\u0A07\u0A39 \u0A38\u0A28 \u0A05\u0A71\u0A1C \u0A26\u0A40\u0A06\u0A02 \u0A2A\u0A4D\u0A30\u0A2E\u0A41\u0A71\u0A16 \u0A16\u0A2C\u0A30\u0A3E\u0A02\u0964 \u0A1A\u0A3E\u0A30 \u0A38\u0A2E\u0A3E\u0A1A\u0A3E\u0A30, \u0A2A\u0A70\u0A1C \u0A2E\u0A3F\u0A70\u0A1F\u0A3E\u0A02 \u0A35\u0A3F\u0A71\u0A1A\u0964 \u0A15\u0A71\u0A32\u0A4D\u0A39 \u0A38\u0A35\u0A47\u0A30\u0A47 \u0A2B\u0A47\u0A30 \u0A2E\u0A3F\u0A32\u0A3E\u0A02\u0A17\u0A47 \u0A28\u0A35\u0A40\u0A06\u0A02 \u0A16\u0A2C\u0A30\u0A3E\u0A02 \u0A28\u0A3E\u0A32\u0964 \u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42 \u0A2E\u0A3F\u0A39\u0A30 \u0A15\u0A30\u0A47\u0964 \u0A38\u0A24 \u0A38\u0A4D\u0A30\u0A40 \u0A05\u0A15\u0A3E\u0A32\u0964',
+    transcript: 'Eh san aaj dian pramukh khabraan. <strong>4 samachar, 5 minute.</strong> Kall savere pher milaange. <strong>Waheguru mihar kare. Sat Sri Akal.</strong>',
+    title: 'Samaapti'
+  }
+];
+
 // === Briefing Engine ===
 let briefingStep = 0;
 let briefingTimerInterval = null;
 let briefingSeconds = 0;
 let isDeepDiving = false;
+
+function getActiveStories() {
+  return userPreferences.style === 'punjabi' ? punjabiStories : briefingStories;
+}
 
 function startBriefingTimer(reset = true) {
   if (reset) briefingSeconds = 0;
@@ -760,7 +776,8 @@ function startBriefingTimer(reset = true) {
 function stopBriefingTimer() { clearInterval(briefingTimerInterval); briefingTimerInterval = null; }
 
 function renderBriefingStep(step) {
-  const story = briefingStories[step];
+  const stories = getActiveStories();
+  const story = stories[step];
   const content = document.getElementById('briefingContent');
   const statusEl = document.getElementById('briefingStatus');
   const avatarEl = document.getElementById('briefingAvatar');
@@ -773,8 +790,8 @@ function renderBriefingStep(step) {
     else if (i === step) dot.classList.add('story-dot-active');
   });
 
-  const isFinal = step === briefingStories.length - 1;
-  const totalStories = briefingStories.length - 2;
+  const isFinal = step === stories.length - 1;
+  const totalStories = stories.length - 2;
   const storyNum = 'Samachar ' + step + '/' + totalStories;
   const timerEl = document.getElementById('briefingTimer');
 
@@ -793,7 +810,13 @@ function renderBriefingStep(step) {
   setTimeout(() => {
     let html = `<div class="story-badge ${story.badgeClass}">${story.category}</div>`;
     html += `<div class="anchor-transcript"><div class="anchor-transcript-label">${story.title}</div><div class="anchor-transcript-text">${story.transcript}</div></div>`;
-    if (story.hasDeepDive && !isDeepDiving) {
+    if (story.followUpPills && !isDeepDiving) {
+      html += '<div class="followup-pills">';
+      story.followUpPills.forEach(p => {
+        html += `<span class="followup-pill ${p.active ? '' : 'pill-disabled'}" onclick="${p.active ? 'triggerDeepDive()' : ''}">${p.label}</span>`;
+      });
+      html += '</div>';
+    } else if (story.hasDeepDive && !isDeepDiving) {
       html += '<div class="anchor-hint">"Aur batao" bolein ya tap karein</div>';
     }
     content.innerHTML = html;
@@ -804,7 +827,7 @@ function renderBriefingStep(step) {
   if (isFinal) {
     actionsEl.innerHTML = `<button class="anchor-btn anchor-btn-skip" onclick="replayBriefing()" title="Replay">${ICONS.refresh}</button>`;
   } else {
-    const moreBtn = story.hasDeepDive ? `<button class="anchor-btn anchor-btn-more" onclick="triggerDeepDive()">Aur batao</button>` : '';
+    const moreBtn = (story.hasDeepDive && !story.followUpPills) ? `<button class="anchor-btn anchor-btn-more" onclick="triggerDeepDive()">Aur batao</button>` : '';
     actionsEl.innerHTML = `
       <button class="anchor-btn anchor-btn-skip" onclick="replayStoryAudio()" title="Replay">${ICONS.volume}</button>
       <button class="anchor-btn anchor-btn-skip" id="pauseBtn" onclick="togglePauseAudio()" title="Pause">${ICONS.pause}</button>
@@ -827,11 +850,11 @@ function renderBriefingStep(step) {
 
 function advanceBriefing() { briefingStep++; renderBriefingStep(briefingStep); }
 function skipStory() { stopCurrentAudio(); isDeepDiving = false; advanceBriefing(); }
-function replayStoryAudio() { const s = briefingStories[briefingStep]; if (s) elevenLabsTTS(s.speakText); }
+function replayStoryAudio() { const s = getActiveStories()[briefingStep]; if (s) elevenLabsTTS(s.speakText); }
 function replayBriefing() { stopCurrentAudio(); briefingStep = 0; briefingSeconds = 0; isDeepDiving = false; startBriefingTimer(); renderBriefingStep(0); }
 
 function triggerDeepDive() {
-  const story = briefingStories[briefingStep];
+  const story = getActiveStories()[briefingStep];
   if (!story || !story.hasDeepDive || isDeepDiving) return;
   stopCurrentAudio(); isDeepDiving = true;
   const content = document.getElementById('briefingContent');
@@ -858,7 +881,7 @@ function triggerDeepDive() {
 
   elevenLabsTTS(story.deepDiveSpeakText);
 }
-function replayDeepDive() { const s = briefingStories[briefingStep]; if (s?.deepDiveSpeakText) elevenLabsTTS(s.deepDiveSpeakText); }
+function replayDeepDive() { const s = getActiveStories()[briefingStep]; if (s?.deepDiveSpeakText) elevenLabsTTS(s.deepDiveSpeakText); }
 function resumeBriefing() { stopCurrentAudio(); isDeepDiving = false; advanceBriefing(); }
 
 function endBriefing() {
@@ -876,15 +899,12 @@ function endBriefing() {
 function showBriefingSummary() {
   const content = document.getElementById('briefingContent');
   if (!content) return;
-  const summaryHTML = `<div class="summary-card">
-    <div class="summary-title">Aaj ka Saransh</div>
-    <div class="summary-item">\u2022 <strong>Mukhyamantri</strong> aaj Varanasi daure par \u2014 Sigra-Lanka marg prabhavit</div>
-    <div class="summary-item">\u2022 <strong>GST</strong>: Vastra udyog par kar 12% se 5% ka prastaav</div>
-    <div class="summary-item">\u2022 <strong>Sensex</strong> 200 ankon ki badhot ke saath khula</div>
-    <div class="summary-item">\u2022 <strong>Virat Kohli</strong> 78* \u2014 Bharat 280/6</div>
-    <div class="summary-item">\u2022 <strong>Sona</strong> \u20B962,450/10g (+\u20B9120)</div>
-    <div class="summary-item">\u2022 <strong>Arjun Sharma</strong> (BHU) ne Rashtriya Vigyan Puraskaar jeeta</div>
-  </div>`;
+  const stories = getActiveStories();
+  const titleText = userPreferences.style === 'punjabi' ? 'Aaj da Saransh' : 'Aaj ka Saransh';
+  const items = stories.slice(1, -1).map(s =>
+    `<div class="summary-item">\u2022 <strong>${s.title}</strong></div>`
+  ).join('');
+  const summaryHTML = `<div class="summary-card"><div class="summary-title">${titleText}</div>${items}</div>`;
   content.insertAdjacentHTML('beforeend', summaryHTML);
   scrollToBottom();
 }
@@ -901,17 +921,16 @@ async function goToState(state) {
 
     case 'welcome':
       conversationStep = 0;
-      userPreferences = { topic: null, language: null, duration: null };
+      userPreferences = { style: null, topic: null, duration: null };
       inputField.readOnly = false;
       inputField.placeholder = 'Apni pasand likho...';
 
       await addMsg('ai', 'Namaskar Rajesh ji! Main hoon aapka <strong>Jio News AI</strong> anchor. Aaj ka samachar briefing tayyar karne mein madad karunga.');
       await wait(400);
-      await addMsg('ai', 'Pehle bataiye, aap kaise andaaz mein samachar sunna pasand karenge?');
+      await addMsg('ai', 'Aap kaise andaaz mein samachar sunna chahenge?');
       await addRaw(makeChips([
         { label: 'Aakashvani Andaaz', value: 'aakashvani' },
-        { label: 'Business Focus', value: 'business' },
-        { label: 'Quick Headlines', value: 'headlines' }
+        { label: 'Punjabi Andaaz', value: 'punjabi' }
       ]));
       currentState = 'collecting_preferences';
       conversationStep = 1;
@@ -935,20 +954,22 @@ async function goToState(state) {
       break;
 
     case 'style_selected': {
-      const topicLabel = { aakashvani: 'Aakashvani andaaz', business: 'Business focus', sports: 'Khel samachar', headlines: 'Quick headlines' }[userPreferences.topic] || 'Aakashvani andaaz';
-      const durLabel = { quick: '~2 min', standard: '~7 min', detailed: '~15 min' }[userPreferences.duration] || '~7 min';
-      const storyCount = userPreferences.duration === 'quick' ? '3' : (userPreferences.duration === 'detailed' ? '10' : '7');
+      const isPunjabi = userPreferences.style === 'punjabi';
+      const styleLabel = isPunjabi ? 'Punjabi andaaz' : 'Aakashvani andaaz';
+      const stories = getActiveStories();
+      const storyCount = stories.length;
+      const durLabel = isPunjabi ? '~5 min' : '~7 min';
       const timeNow = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
 
-      await addMsg('ai', `Tayyar hai! <strong>${topicLabel}</strong> mein aapka briefing. <strong>${storyCount} samachar, ${durLabel}.</strong> Beech mein kisi bhi khabar par bol sakte hain <em>"Aur batao"</em> \u2014 main vistaar se bataunga.`);
+      await addMsg('ai', `Tayyar hai! <strong>${styleLabel}</strong> mein aapka briefing. <strong>${storyCount} samachar, ${durLabel}.</strong> Beech mein kisi bhi khabar par tap karein \u2014 main vistaar se bataunga.`);
       await addRaw(`
         <div class="notif-card" onclick="goToState('briefing')">
           <div class="notif-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M19.15 10.36l-10-7A2 2 0 008 3a1.88 1.88 0 00-.92.23A2 2 0 006 5v14a2 2 0 001.08 1.77c.282.154.599.233.92.23a2 2 0 001.15-.36l10-7a2 2 0 000-3.28z"/></svg>
           </div>
           <div class="notif-text">
-            <h4>Samachar suniye</h4>
-            <p>${topicLabel} \u2022 ${storyCount} samachar \u2022 ${durLabel}</p>
+            <h4>${isPunjabi ? 'Khabrein suniye' : 'Samachar suniye'}</h4>
+            <p>${styleLabel} \u2022 ${storyCount} samachar \u2022 ${durLabel}</p>
           </div>
           <div class="notif-time">${timeNow}</div>
         </div>
@@ -956,15 +977,21 @@ async function goToState(state) {
       break;
     }
 
-    case 'briefing':
+    case 'briefing': {
       inputField.readOnly = true;
-      inputField.placeholder = "Bolo: 'Aur batao...'";
+      inputField.placeholder = "Samachar sun rahe hain...";
       document.querySelectorAll('.anchor-card').forEach(c => c.closest('.msg')?.remove());
       stopBriefingTimer();
       briefingStep = 0; briefingSeconds = 0; isDeepDiving = false;
       preCacheStories(0);
 
-      const storyDots = briefingStories.map(() => '<div class="story-dot"></div>').join('');
+      const isPunj = userPreferences.style === 'punjabi';
+      const stories = getActiveStories();
+      const storyDots = stories.map(() => '<div class="story-dot"></div>').join('');
+      const avatarSrc = AVATAR_IMAGES[userPreferences.style] || AVATAR_IMAGES.aakashvani;
+      const anchorTitle = isPunj ? 'Rajesh ji di Khabar' : 'Rajesh ji ka Samachar';
+      const anchorSubtitle = isPunj ? 'Jio Khabar Seva \u2022 Ludhiana' : 'Jio Samachar Seva \u2022 Varanasi';
+
       const cardDiv = document.createElement('div');
       cardDiv.className = 'msg msg-ai msg-full fade-in';
       cardDiv.innerHTML = `<div class="anchor-card" id="anchorCard">
@@ -972,27 +999,14 @@ async function goToState(state) {
           <div class="anchor-avatar">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 2a1 1 0 00-1 1v18a1 1 0 002 0V3a1 1 0 00-1-1zM4 9a1 1 0 00-1 1v4a1 1 0 102 0v-4a1 1 0 00-1-1zm4-3a1 1 0 00-1 1v10a1 1 0 102 0V7a1 1 0 00-1-1zm12 3a1 1 0 00-1 1v4a1 1 0 002 0v-4a1 1 0 00-1-1zm-4-3a1 1 0 00-1 1v10a1 1 0 002 0V7a1 1 0 00-1-1z"/></svg>
           </div>
-          <div class="anchor-name">Rajesh ji ka Samachar</div>
-          <div class="anchor-role">Jio Samachar Seva \u2022 Varanasi</div>
+          <div class="anchor-name">${anchorTitle}</div>
+          <div class="anchor-role">${anchorSubtitle}</div>
           <div class="anchor-status" id="briefingStatus"><div class="anchor-status-dot"></div> Aarambh...</div>
           <div class="anchor-timer" id="briefingTimer">00:00</div>
         </div>
         <div class="story-progress">${storyDots}</div>
-        <div class="anchor-person" id="briefingAvatar">
-          <div class="anchor-person-body">
-            <div class="ap-head">
-              <div class="ap-hair"></div>
-              <div class="ap-face">
-                <div class="ap-eye ap-eye-l"></div>
-                <div class="ap-eye ap-eye-r"></div>
-                <div class="ap-mouth" id="avatarMouth"></div>
-              </div>
-            </div>
-            <div class="ap-torso">
-              <div class="ap-collar"></div>
-              <div class="ap-tie"></div>
-            </div>
-          </div>
+        <div class="anchor-avatar-wrap" id="briefingAvatar">
+          <img class="anchor-person-img" id="anchorImg" src="${avatarSrc}" alt="News Anchor">
           <div class="anchor-person-label">Jio News AI</div>
         </div>
         <div id="briefingContent"></div>
@@ -1003,6 +1017,7 @@ async function goToState(state) {
       startBriefingTimer();
       setTimeout(() => renderBriefingStep(0), 600);
       break;
+    }
   }
 }
 
