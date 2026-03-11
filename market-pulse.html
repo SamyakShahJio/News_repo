@@ -59,10 +59,12 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
   height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 12px;
   border-bottom: 1px solid var(--stroke-subtle); background: var(--white); position: relative; z-index: 80;
 }
-.header-icon {
-  width: 36px; height: 36px; border-radius: 50%; background: var(--sparkle-50);
+.header-back {
+  width: 36px; height: 36px; border-radius: 50%; background: none; border: none;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent;
 }
+.header-back:active { background: var(--grey-10); }
 .header-info h3 { font-size: 16px; font-weight: 700; color: var(--grey-100); line-height: 1.2; }
 .header-info span { font-size: 12px; color: var(--sparkle-50); font-weight: 500; }
 /* lang toggle removed — single-language Hindi prototype */
@@ -510,9 +512,9 @@ body { font-family: 'JioType', sans-serif; background: var(--white); display: fl
 
 <div class="phone-frame">
   <div class="app-header">
-    <div class="header-icon">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
-    </div>
+    <button class="header-back" onclick="window.location.href='https://sunit1986.github.io/design-prototypes/news-tools.html'" aria-label="Back">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--grey-100)"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
     <div class="header-info">
       <h3>Market Pulse</h3>
       <span id="headerStatus">Tayyar hai</span>
@@ -862,7 +864,7 @@ const STOCKS_DATA = {
 // === State Machine ===
 let currentState = 'welcome';
 let _lastNavAt = 0;
-let chaiPlaying = false;
+/* DISABLED */ // let chaiPlaying = false;
 
 async function goToState(state) {
   const now = Date.now();
@@ -880,9 +882,9 @@ async function goToState(state) {
         <div class="chips">
           <div class="chip chip-rich" onclick="goToState('market_summary')">Aaj ka Bazaar<span class="chip-desc">Sensex, Nifty aur poora haal</span></div>
           <div class="chip chip-rich" onclick="goToState('portfolio')">Mera Portfolio<span class="chip-desc">Apne 4 stocks ka haal dekho</span></div>
-          <div class="chip chip-rich" onclick="goToState('chai_pe_charcha')">Chai pe Charcha<span class="chip-desc">2 min mein aaj ka market suno</span></div>
-          <div class="chip chip-rich" onclick="goToState('challenge')">₹100 ka Challenge<span class="chip-desc">Chhoti rakam, bada seekh</span></div>
-          <div class="chip chip-rich" onclick="goToState('time_machine')">Time Machine<span class="chip-desc">Agar pehle invest kiya hota toh?</span></div>
+          <div class="chip chip-rich chip-disabled">Chai pe Charcha<span class="chip-desc">Jaldi aayega</span></div>
+          <div class="chip chip-rich chip-disabled">₹100 ka Challenge<span class="chip-desc">Jaldi aayega</span></div>
+          <div class="chip chip-rich chip-disabled">Time Machine<span class="chip-desc">Jaldi aayega</span></div>
           <div class="chip chip-rich" onclick="goToState('stock_dive')">Stock Deep Dive<span class="chip-desc">Kisi stock ya sector ko samjho</span></div>
         </div>
       `, 200);
@@ -898,11 +900,11 @@ async function goToState(state) {
         <div class="chips">
           <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
           <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
-          <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
         </div>
       `, 400);
       break;
 
+    /* DISABLED: time_machine journey
     case 'time_machine':
       await addMsg('user', 'Time Machine dikhao');
       showTyping(); await wait(700); hideTyping();
@@ -916,6 +918,7 @@ async function goToState(state) {
         </div>
       `, 400);
       break;
+    */
 
     case 'portfolio':
       await addMsg('user', 'Mera portfolio dikhao');
@@ -927,22 +930,24 @@ async function goToState(state) {
         <div class="chips">
           <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
           <div class="chip" onclick="showStockDiveResult('gold_silver')">Sona-Chandi ka bhav</div>
-          <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
         </div>
       `, 400);
       break;
 
+    /* DISABLED: challenge journey
     case 'challenge':
       await addMsg('user', '₹100 ka challenge khelo');
       showTyping(); await wait(600); hideTyping();
       await addMsg('ai', 'Chalo khelte hain! Agar aaj <strong>₹100 lagaana ho</strong> toh kahan lagaoge?');
       await addRaw(buildChallengeCard(), 300, true);
       break;
+    */
 
     case 'voice_query':
       await addRaw(buildVoiceQueryCard(), 200, true);
       break;
 
+    /* DISABLED: chai_pe_charcha journey
     case 'chai_pe_charcha':
       await addMsg('user', 'Chai pe Charcha sunao');
       showTyping(); await wait(600); hideTyping();
@@ -956,6 +961,7 @@ async function goToState(state) {
         </div>
       `, 400);
       break;
+    */
 
     case 'stock_dive':
       await addMsg('user', 'Stock Deep Dive dikhao');
@@ -964,6 +970,7 @@ async function goToState(state) {
       await addRaw(buildStockDiveCard(), 300, true);
       break;
 
+    /* DISABLED: sip_calc journey
     case 'sip_calc':
       await addMsg('user', 'SIP calculator dikhao');
       showTyping(); await wait(500); hideTyping();
@@ -978,6 +985,7 @@ async function goToState(state) {
         </div>
       `, 400);
       break;
+    */
   }
 }
 
@@ -1086,7 +1094,7 @@ function buildMarketSummaryCard() {
   </div>`;
 }
 
-// === Build Time Machine Carousel ===
+/* DISABLED: Time Machine builder functions
 function buildTimeMachineCarousel() {
   const cards = STOCKS_DATA.timeMachine.map((s, i) => {
     const cls = s.positive ? 'green' : 'red';
@@ -1129,6 +1137,7 @@ function updateTMDots() {
     if (dot) { dot.className = 'tm-dot' + (i === idx ? ' tm-dot-active' : ''); }
   });
 }
+*/
 
 // === Build Portfolio Card ===
 function buildPortfolioCard() {
@@ -1207,6 +1216,7 @@ function openStockDetail(idx) {
 
 // speakStockDetail now handled via playTTS with STOCKS_DATA.portfolio.stocks[idx].speakText
 
+/* DISABLED: Challenge builder functions
 // === Build ₹100 Challenge Card ===
 function buildChallengeCard() {
   return `<div class="challenge-card">
@@ -1290,7 +1300,9 @@ function showChallengeResult(stock) {
     `, 400);
   });
 }
+DISABLED */
 
+/* DISABLED: Chai pe Charcha builder functions
 // === Build Chai pe Charcha Card ===
 function buildChaiCard() {
   const bars = [];
@@ -1347,6 +1359,7 @@ function toggleChai() {
     });
   }
 }
+DISABLED */
 
 // === Build Stock Deep Dive Card ===
 function buildStockDiveCard() {
@@ -1416,12 +1429,12 @@ function showStockDiveResult(id) {
       <div class="chips">
         ${goldChip}
         <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
-        <div class="chip" onclick="goToState('sip_calc')">SIP Calculator</div>
       </div>
     `, 400);
   });
 }
 
+/* DISABLED: SIP Calculator builder functions
 // === Build SIP Calculator Card ===
 function buildSIPCard() {
   return `<div class="sip-card">
@@ -1487,6 +1500,7 @@ function calculateSIP() {
   `;
   scrollToBottom();
 }
+DISABLED */
 
 // === Build Voice Query Card ===
 function buildVoiceQueryCard() {
@@ -1560,12 +1574,14 @@ function handleTextInput() {
     addMsg('user', text).then(() => simulateReliance());
   } else if (lowerText.includes('portfolio') || lowerText.includes('mera')) {
     goToState('portfolio');
+  /* DISABLED: routes for disabled journeys
   } else if (lowerText.includes('sip') || lowerText.includes('calculator')) {
     goToState('sip_calc');
   } else if (lowerText.includes('chai') || lowerText.includes('charcha')) {
     goToState('chai_pe_charcha');
   } else if (lowerText.includes('100') || lowerText.includes('challenge')) {
     goToState('challenge');
+  DISABLED */
   } else if (lowerText.includes('gold') || lowerText.includes('sona') || lowerText.includes('chandi') || lowerText.includes('silver')) {
     addMsg('user', text).then(() => showStockDiveResult('gold_silver'));
   } else if (lowerText.includes('sector') || lowerText.includes('deep dive') || lowerText.includes('banking') || lowerText.includes('it sector')) {
@@ -1578,7 +1594,7 @@ function handleTextInput() {
         <div class="chips">
           <div class="chip" onclick="goToState('stock_dive')">Stock Deep Dive</div>
           <div class="chip" onclick="goToState('portfolio')">Mera Portfolio</div>
-          <div class="chip" onclick="goToState('chai_pe_charcha')">Chai pe Charcha</div>
+          <div class="chip" onclick="goToState('market_summary')">Aaj ka Bazaar</div>
         </div>
       `, 200);
     });
