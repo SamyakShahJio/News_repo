@@ -81,6 +81,13 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
 }
 .chip:hover, .chip:active { background: var(--primary); color: var(--white); }
 .chip-disabled { opacity: 0.38; pointer-events: none; border-color: var(--grey-60); color: var(--grey-60); }
+.chip-selected { background: var(--primary); color: var(--white); pointer-events: none; }
+.chip-group-label {
+  font-size: 11px; font-weight: 700; color: var(--grey-80);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 4px; margin-top: 10px; width: 100%;
+}
+.chip-group-label:first-child { margin-top: 0; }
 
 /* Notification card */
 .notif-card {
@@ -177,6 +184,11 @@ body { font-family: 'JioType'; background: var(--white); display: flex; flex-dir
 .badge-gold { background: rgba(247,171,32,0.2); color: var(--secondary); }
 .badge-good { background: rgba(30,204,176,0.15); color: var(--sparkle); }
 .badge-weather { background: rgba(53,53,243,0.15); color: var(--primary); }
+
+.story-image {
+  width: 100%; height: 120px; border-radius: var(--radius-md);
+  object-fit: cover; margin-bottom: 10px;
+}
 
 .anchor-transcript {
   background: var(--surface-ghost); border-radius: var(--radius-md);
@@ -527,6 +539,52 @@ function chipSelect(value) {
   handleSend();
 }
 
+function makeGroupedChips(groups) {
+  let html = '<div class="bubble bubble-ai"><div class="chips" style="flex-direction:column;align-items:flex-start;">';
+  groups.forEach(group => {
+    html += `<div class="chip-group-label">${group.label}</div>`;
+    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+    group.options.forEach(o => {
+      html += `<span class="chip${o.disabled ? ' chip-disabled' : ''}" data-group="${group.name}" onclick="${o.disabled ? '' : `groupChipSelect('${group.name}','${o.value}',this)`}">${o.label}</span>`;
+    });
+    html += '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+let pendingGroupSelections = {};
+let requiredGroups = [];
+
+function groupChipSelect(group, value, el) {
+  document.querySelectorAll(`.chip[data-group="${group}"]`).forEach(c => {
+    c.classList.add('chip-disabled');
+    c.style.pointerEvents = 'none';
+  });
+  el.classList.remove('chip-disabled');
+  el.classList.add('chip-selected');
+  el.style.pointerEvents = 'none';
+  pendingGroupSelections[group] = value;
+  if (requiredGroups.every(g => pendingGroupSelections[g])) {
+    setTimeout(() => processGroupedPreferences(pendingGroupSelections), 400);
+  }
+}
+
+async function processGroupedPreferences(selections) {
+  await addMsg('user', `${selections.topic}, ${selections.duration}`);
+  showTyping();
+  await wait(800);
+  hideTyping();
+  userPreferences.topic = parseTopic(selections.topic);
+  userPreferences.duration = parseDuration(selections.duration);
+  conversationStep = 0;
+  const topicAck = getTopicAck(userPreferences.topic);
+  const durAck = getDurationAck(userPreferences.duration);
+  await addMsg('ai', `${topicAck} ${durAck}`);
+  await wait(300);
+  await goToState('thinking');
+}
+
 // === Preference Parsers ===
 function parseStyle(text) {
   if (/punjab|panjab|ਪੰਜਾਬ/.test(text)) return 'punjabi';
@@ -588,66 +646,54 @@ async function processPreferenceInput(text) {
   hideTyping();
 
   switch(conversationStep) {
-    case 1: // Style
+    case 1: // Style → then show topic+duration together
       userPreferences.style = parseStyle(lower);
       activeVoiceId = VOICE_CONFIG[userPreferences.style] || VOICE_CONFIG.aakashvani;
-      conversationStep = 2;
+      conversationStep = 0;
       await addMsg('ai', getStyleAck(userPreferences.style));
       await wait(400);
 
-      if (userPreferences.style === 'punjabi') {
-        await addMsg('ai', 'Kis tarah di khabrein sunni ne?');
-        await addRaw(makeChips([
-          { label: 'Kisan Khabrein', value: 'kisan' },
-          { label: 'Mandi Bhaav', value: 'mandi', disabled: true },
-          { label: 'Sports', value: 'sports', disabled: true }
-        ]));
-      } else {
-        await addMsg('ai', 'Kis tarah ke samachar sunna chahenge?');
-        await addRaw(makeChips([
-          { label: 'Hyper-local', value: 'hyperlocal' },
-          { label: 'Business', value: 'business', disabled: true },
-          { label: 'Sports', value: 'sports', disabled: true }
-        ]));
-      }
-      break;
-
-    case 2: // Topic
-      userPreferences.topic = parseTopic(lower);
-      conversationStep = 3;
-      await addMsg('ai', getTopicAck(userPreferences.topic));
-      await wait(400);
+      pendingGroupSelections = {};
+      requiredGroups = ['topic', 'duration'];
 
       if (userPreferences.style === 'punjabi') {
-        await addMsg('ai', 'Kitna lamba briefing chahiye?');
-        await addRaw(makeChips([
-          { label: 'Quick (5 min)', value: 'quick' },
-          { label: 'Standard (7 min)', value: 'standard', disabled: true }
+        await addMsg('ai', 'Topic te duration chuno:');
+        await addRaw(makeGroupedChips([
+          { name: 'topic', label: 'Kis tarah di khabrein?', options: [
+            { label: 'Kisan Khabrein', value: 'kisan' },
+            { label: 'Mandi Bhaav', value: 'mandi', disabled: true },
+            { label: 'Sports', value: 'sports', disabled: true }
+          ]},
+          { name: 'duration', label: 'Kitna lamba briefing?', options: [
+            { label: 'Quick (5 min)', value: 'quick' },
+            { label: 'Standard (7 min)', value: 'standard', disabled: true }
+          ]}
         ]));
       } else {
-        await addMsg('ai', 'Kitna lamba briefing chahiye?');
-        await addRaw(makeChips([
-          { label: 'Standard (7 min)', value: 'standard' },
-          { label: 'Quick (2 min)', value: 'quick', disabled: true }
+        await addMsg('ai', 'Topic aur duration choose karein:');
+        await addRaw(makeGroupedChips([
+          { name: 'topic', label: 'Kis tarah ke samachar?', options: [
+            { label: 'Hyper-local', value: 'hyperlocal' },
+            { label: 'Business', value: 'business', disabled: true },
+            { label: 'Sports', value: 'sports', disabled: true }
+          ]},
+          { name: 'duration', label: 'Kitna lamba briefing?', options: [
+            { label: 'Standard (7 min)', value: 'standard' },
+            { label: 'Quick (2 min)', value: 'quick', disabled: true }
+          ]}
         ]));
       }
-      break;
-
-    case 3: // Duration
-      userPreferences.duration = parseDuration(lower);
-      conversationStep = 0;
-      await addMsg('ai', getDurationAck(userPreferences.duration));
-      await wait(300);
-      await goToState('thinking');
       break;
   }
 }
 
 // === Briefing Stories (Aakashvani Style) ===
+const IMG_BASE = 'https://raw.githubusercontent.com/SamyakShahJio/News_repo/main/assets';
 const briefingStories = [
   {
     category: 'SAMACHAR',
     badgeClass: 'badge-weather',
+    image: IMG_BASE + '/story-weather.jpg',
     speakText: '\u0928\u092E\u0938\u094D\u0915\u093E\u0930, \u092F\u0939 \u0939\u0948 \u091C\u093F\u092F\u094B \u0938\u092E\u093E\u091A\u093E\u0930 \u0938\u0947\u0935\u093E\u0964 \u092E\u0948\u0902 \u0939\u0942\u0901 \u0906\u092A\u0915\u093E \u0938\u092E\u093E\u091A\u093E\u0930 \u0935\u093E\u091A\u0915\u0964 \u0906\u091C \u092C\u0941\u0927\u0935\u093E\u0930, 26 \u092B\u0930\u0935\u0930\u0940\u0964 \u0935\u093E\u0930\u093E\u0923\u0938\u0940 \u092E\u0947\u0902 \u0906\u091C \u0915\u093E \u0924\u093E\u092A\u092E\u093E\u0928 28 \u0921\u093F\u0917\u094D\u0930\u0940 \u0938\u0947\u0932\u094D\u0938\u093F\u092F\u0938, \u0926\u093F\u0928 \u092E\u0947\u0902 \u0927\u0942\u092A \u0930\u0939\u0947\u0917\u0940, \u0926\u094B\u092A\u0939\u0930 \u0915\u0947 \u092C\u093E\u0926 \u0939\u0932\u094D\u0915\u0940 \u0939\u0935\u093E \u0915\u093E \u0905\u0928\u0941\u092E\u093E\u0928 \u0939\u0948\u0964 \u0906\u0907\u090F \u0938\u0941\u0928\u093F\u090F \u0906\u091C \u0915\u0940 \u092A\u094D\u0930\u092E\u0941\u0916 \u0916\u092C\u0930\u0947\u0902\u0964',
     transcript: '<strong>Namaskar,</strong> yeh hai Jio Samachar Seva. Aaj budhvaar, 26 February. Varanasi mein aaj ka taapman <strong>28\u00B0C</strong>, din mein dhoop rahegi, dopahar ke baad halki hawa ka anumaan hai. Aaiye suniye aaj ki pramukh khabren.',
     title: 'Pramukh Samachar'
@@ -655,13 +701,23 @@ const briefingStories = [
   {
     category: 'STHANIYA SAMACHAR',
     badgeClass: 'badge-local',
+    image: IMG_BASE + '/story-local.jpg',
     speakText: '\u092A\u0939\u0932\u0940 \u0916\u092C\u0930\u0964 \u0909\u0924\u094D\u0924\u0930 \u092A\u094D\u0930\u0926\u0947\u0936 \u0915\u0947 \u092E\u0941\u0916\u094D\u092F\u092E\u0902\u0924\u094D\u0930\u0940 \u0906\u091C \u0935\u093E\u0930\u093E\u0923\u0938\u0940 \u0915\u0947 \u0926\u094C\u0930\u0947 \u092A\u0930 \u0939\u0948\u0902\u0964 \u0938\u0941\u092C\u0939 \u0926\u0938 \u092C\u091C\u0947 \u0938\u0947 \u0936\u093E\u092E \u091A\u093E\u0930 \u092C\u091C\u0947 \u0924\u0915 \u0938\u093F\u0917\u0930\u093E \u0938\u0947 \u0932\u0902\u0915\u093E \u092E\u093E\u0930\u094D\u0917 \u092A\u0930 \u092F\u093E\u0924\u093E\u092F\u093E\u0924 \u092A\u0930\u093F\u0935\u0930\u094D\u0924\u0928 \u0930\u0939\u0947\u0917\u093E\u0964 \u0917\u094B\u0926\u094C\u0932\u093F\u092F\u093E \u091A\u094C\u0930\u093E\u0939\u093E \u092D\u0940 \u092A\u094D\u0930\u092D\u093E\u0935\u093F\u0924 \u0939\u094B\u0917\u093E\u0964 \u0935\u0948\u0915\u0932\u094D\u092A\u093F\u0915 \u092E\u093E\u0930\u094D\u0917 \u0915\u0947 \u0930\u0942\u092A \u092E\u0947\u0902 \u092D\u0947\u0932\u0942\u092A\u0941\u0930 \u0938\u0947 \u0905\u0938\u094D\u0938\u0940 \u092E\u093E\u0930\u094D\u0917 \u0915\u093E \u0909\u092A\u092F\u094B\u0917 \u0915\u0930\u0947\u0902\u0964',
     transcript: '<strong>Uttar Pradesh ke Mukhyamantri</strong> aaj Varanasi ke daure par hain. Subah 10 baje se shaam 4 baje tak <strong>Sigra se Lanka marg</strong> par yaatayaat parivartan rahega. <strong>Godowlia chauraha</strong> bhi prabhavit hoga. Vaikalpik maarg: Bhelupur se Assi.',
-    title: 'Mukhyamantri ka Varanasi Daura'
+    title: 'Mukhyamantri ka Varanasi Daura',
+    hasDeepDive: true,
+    followUpPills: [
+      { label: 'Route details kya hain?', active: true },
+      { label: 'Kitne baje tak band?', active: false },
+      { label: 'Vaikalpik maarg?', active: false }
+    ],
+    deepDiveSpeakText: '\u0906\u0907\u090F \u0935\u093F\u0938\u094D\u0924\u093E\u0930 \u0938\u0947 \u0938\u092E\u091D\u0924\u0947 \u0939\u0948\u0902\u0964 \u092E\u0941\u0916\u094D\u092F\u092E\u0902\u0924\u094D\u0930\u0940 \u0915\u093E \u0915\u093E\u0930\u0935\u093E\u0901 \u0938\u0941\u092C\u0939 \u0926\u0938 \u092C\u091C\u0947 \u0938\u0947 \u0936\u093E\u092E \u091A\u093E\u0930 \u092C\u091C\u0947 \u0924\u0915 \u0939\u0948\u0964 \u0938\u093F\u0917\u0930\u093E \u0938\u0947 \u0932\u0902\u0915\u093E \u092E\u093E\u0930\u094D\u0917 \u092A\u0930 \u092F\u093E\u0924\u093E\u092F\u093E\u0924 \u092A\u094D\u0930\u0924\u093F\u092C\u0902\u0927\u093F\u0924 \u0930\u0939\u0947\u0917\u093E\u0964 \u0917\u094B\u0926\u094C\u0932\u093F\u092F\u093E \u091A\u094C\u0930\u093E\u0939\u093E \u092D\u0940 \u092C\u0902\u0926 \u0930\u0939\u0947\u0917\u093E\u0964 \u0935\u0948\u0915\u0932\u094D\u092A\u093F\u0915 \u092E\u093E\u0930\u094D\u0917 \u0915\u0947 \u0930\u0942\u092A \u092E\u0947\u0902 \u0906\u092A \u092D\u0947\u0932\u0942\u092A\u0941\u0930 \u0938\u0947 \u0905\u0938\u094D\u0938\u0940 \u0918\u093E\u091F \u0915\u093E \u0930\u093E\u0938\u094D\u0924\u093E \u0905\u092A\u0928\u093E \u0938\u0915\u0924\u0947 \u0939\u0948\u0902\u0964 \u091F\u094D\u0930\u0948\u092B\u093F\u0915 \u092A\u0941\u0932\u093F\u0938 \u0928\u0947 \u0935\u093F\u0936\u0947\u0937 \u0935\u094D\u092F\u0935\u0938\u094D\u0925\u093E \u0915\u0940 \u0939\u0948\u0964',
+    deepDiveTranscript: 'Mukhyamantri ka kaaravaan <strong>subah 10 baje se shaam 4 baje</strong> tak chalega.<br><br><strong>Sigra se Lanka marg</strong> poori tarah band rahega. Godowlia chauraha bhi prabhavit.<br><br>Vaikalpik maarg: <strong>Bhelupur se Assi ghaat ka rasta</strong> apnaayen. Traffic police ne vishesh vyavastha ki hai.'
   },
   {
     category: 'VYAPAAR SAMACHAR',
     badgeClass: 'badge-business',
+    image: IMG_BASE + '/story-gst.jpg',
     speakText: '\u0926\u0942\u0938\u0930\u0940 \u0916\u092C\u0930\u0964 \u0906\u091C \u091C\u0940.\u090F\u0938.\u091F\u0940. \u092A\u0930\u093F\u0937\u0926 \u0915\u0940 \u092C\u0948\u0920\u0915 \u092E\u0947\u0902 \u0935\u0938\u094D\u0924\u094D\u0930 \u0909\u0926\u094D\u092F\u094B\u0917 \u092A\u0930 \u092E\u0939\u0924\u094D\u0935\u092A\u0942\u0930\u094D\u0923 \u091A\u0930\u094D\u091A\u093E \u0939\u094B\u0928\u0947 \u0935\u093E\u0932\u0940 \u0939\u0948\u0964 \u092E\u0948\u0928-\u092E\u0947\u0921 \u092B\u0948\u092C\u094D\u0930\u093F\u0915\u094D\u0938 \u092A\u0930 \u0915\u0930 \u0915\u0940 \u0926\u0930 \u092C\u093E\u0930\u0939 \u092A\u094D\u0930\u0924\u093F\u0936\u0924 \u0938\u0947 \u0918\u091F\u093E\u0915\u0930 \u092A\u093E\u0901\u091A \u092A\u094D\u0930\u0924\u093F\u0936\u0924 \u0915\u0930\u0928\u0947 \u0915\u093E \u092A\u094D\u0930\u0938\u094D\u0924\u093E\u0935 \u0939\u0948\u0964 \u0930\u093E\u091C\u0947\u0936 \u091C\u0940, \u092F\u0926\u093F \u092F\u0939 \u092A\u094D\u0930\u0938\u094D\u0924\u093E\u0935 \u092A\u093E\u0930\u093F\u0924 \u0939\u094B\u0924\u093E \u0939\u0948 \u0924\u094B \u0906\u092A\u0915\u0947 \u092A\u0949\u0932\u093F\u090F\u0938\u094D\u091F\u0930 \u0938\u094D\u091F\u0949\u0915 \u092A\u0930 \u0932\u0917\u092D\u0917 \u0906\u0920 \u0938\u0947 \u0926\u0938 \u0930\u0941\u092A\u092F\u0947 \u092A\u094D\u0930\u0924\u093F \u092E\u0940\u091F\u0930 \u0915\u093E \u0932\u093E\u092D \u0939\u094B \u0938\u0915\u0924\u093E \u0939\u0948\u0964',
     transcript: 'Aaj <strong>GST Parishad</strong> ki baithak mein vastra udyog par mahatvapurn charcha hone wali hai. Man-made fabrics par kar ki dar <strong>12% se 5%</strong> karne ka prastaav hai. Yadi yeh parit hota hai toh polyester stock par <strong>\u20B98-10 prati metre</strong> ka laabh ho sakta hai.',
     title: 'GST Vastra Udyog Samachar',
@@ -677,34 +733,71 @@ const briefingStories = [
   {
     category: 'BAZAAR SAMACHAR',
     badgeClass: 'badge-markets',
+    image: IMG_BASE + '/story-markets.jpg',
     speakText: '\u092C\u093E\u091C\u093C\u093E\u0930 \u0915\u0940 \u0916\u092C\u0930\u0947\u0902\u0964 \u0938\u0947\u0902\u0938\u0947\u0915\u094D\u0938 \u0906\u091C \u0926\u094B \u0938\u094C \u0905\u0902\u0915\u094B\u0902 \u0915\u0940 \u092C\u0922\u093C\u094B\u0924\u0930\u0940 \u0915\u0947 \u0938\u093E\u0925 \u0916\u0941\u0932\u093E\u0964 \u091F\u093E\u091F\u093E \u092E\u094B\u091F\u0930\u094D\u0938 \u0915\u0947 \u0936\u0947\u092F\u0930 \u0924\u0940\u0928 \u092A\u094D\u0930\u0924\u093F\u0936\u0924 \u090A\u092A\u0930 \u0939\u0948\u0902, \u0928\u090F \u0907\u0932\u0947\u0915\u094D\u091F\u094D\u0930\u093F\u0915 \u0935\u094D\u0939\u0940\u0915\u0932 \u0915\u0940 \u0918\u094B\u0937\u0923\u093E \u0915\u0947 \u092C\u093E\u0926\u0964 \u0906\u0908.\u091F\u0940. \u0915\u094D\u0937\u0947\u0924\u094D\u0930 \u092E\u0947\u0902 \u0939\u0932\u094D\u0915\u093E \u0926\u092C\u093E\u0935 \u0939\u0948, \u091F\u0940.\u0938\u0940.\u090F\u0938. \u0914\u0930 \u0907\u0902\u092B\u094B\u0938\u093F\u0938 \u0926\u094B\u0928\u094B\u0902 \u090F\u0915 \u092A\u094D\u0930\u0924\u093F\u0936\u0924 \u0928\u0940\u091A\u0947\u0964',
     transcript: '<strong>Sensex aaj 200 ankon ki badhot</strong> ke saath khula. Tata Motors <strong>3% upar</strong>, naye EV ghoshna ke baad. IT kshetra mein halka dabaav \u2014 TCS aur Infosys 1% neeche.',
-    title: 'Bazaar ki Sthiti'
+    title: 'Bazaar ki Sthiti',
+    hasDeepDive: true,
+    followUpPills: [
+      { label: 'Sensex ka trend?', active: true },
+      { label: 'Tata EV ka asar?', active: false },
+      { label: 'IT sector kyon gira?', active: false }
+    ],
+    deepDiveSpeakText: '\u092C\u093E\u091C\u093C\u093E\u0930 \u0915\u0940 \u0935\u093F\u0938\u094D\u0924\u0943\u0924 \u091C\u093E\u0928\u0915\u093E\u0930\u0940\u0964 \u0938\u0947\u0902\u0938\u0947\u0915\u094D\u0938 \u092E\u0947\u0902 \u0926\u094B \u0938\u094C \u0905\u0902\u0915\u094B\u0902 \u0915\u0940 \u092C\u0922\u093C\u094B\u0924\u0930\u0940 \u0911\u091F\u094B \u0914\u0930 \u0907\u0932\u0947\u0915\u094D\u091F\u094D\u0930\u093F\u0915 \u0935\u094D\u0939\u0940\u0915\u0932 \u0936\u0947\u092F\u0930\u094B\u0902 \u0915\u0940 \u0935\u091C\u0939 \u0938\u0947 \u0906\u0908 \u0939\u0948\u0964 \u091F\u093E\u091F\u093E \u092E\u094B\u091F\u0930\u094D\u0938 \u0928\u0947 \u0928\u092F\u093E \u0907\u0932\u0947\u0915\u094D\u091F\u094D\u0930\u093F\u0915 \u0935\u094D\u0939\u0940\u0915\u0932 \u0932\u0949\u0928\u094D\u091A \u0915\u093F\u092F\u093E, \u091C\u093F\u0938\u0938\u0947 \u0936\u0947\u092F\u0930 \u0924\u0940\u0928 \u092A\u094D\u0930\u0924\u093F\u0936\u0924 \u090A\u092A\u0930 \u0917\u092F\u093E\u0964 \u0906\u0908\u091F\u0940 \u0915\u094D\u0937\u0947\u0924\u094D\u0930 \u092E\u0947\u0902 \u091F\u0940\u0938\u0940\u090F\u0938 \u0914\u0930 \u0907\u0902\u092B\u094B\u0938\u093F\u0938 \u0926\u094B\u0928\u094B\u0902 \u090F\u0915 \u092A\u094D\u0930\u0924\u093F\u0936\u0924 \u0928\u0940\u091A\u0947 \u0939\u0948\u0902 \u0915\u094D\u092F\u094B\u0902\u0915\u093F \u0935\u0948\u0936\u094D\u0935\u093F\u0915 \u0905\u0930\u094D\u0925\u0935\u094D\u092F\u0935\u0938\u094D\u0925\u093E \u092E\u0947\u0902 \u092E\u0902\u0926\u0940 \u0915\u0947 \u0938\u0902\u0915\u0947\u0924 \u0939\u0948\u0902\u0964',
+    deepDiveTranscript: 'Sensex mein <strong>200 ankon ki badhot</strong> auto aur EV shares ki wajah se aayi hai.<br><br>Tata Motors ka naya EV launch hone se share <strong>3% upar</strong> gaya. Analysts ke anusaar yeh trend jaari rah sakta hai.<br><br>IT sector mein <strong>TCS aur Infosys 1% neeche</strong> kyunki vaishvik arthvyavastha mein mandi ke sanket hain.'
   },
   {
     category: 'KHEL SAMACHAR',
     badgeClass: 'badge-sports',
+    image: IMG_BASE + '/story-cricket.jpg',
     speakText: '\u0916\u0947\u0932 \u091C\u0917\u0924 \u0938\u0947\u0964 \u092D\u093E\u0930\u0924 \u0914\u0930 \u0911\u0938\u094D\u091F\u094D\u0930\u0947\u0932\u093F\u092F\u093E \u0915\u0947 \u092C\u0940\u091A \u091A\u094C\u0925\u0947 \u091F\u0947\u0938\u094D\u091F \u092E\u0948\u091A \u092E\u0947\u0902 \u092D\u093E\u0930\u0924 \u0915\u093E \u0938\u094D\u0915\u094B\u0930 \u0939\u0948 \u0926\u094B \u0938\u094C \u0905\u0938\u094D\u0938\u0940, \u091B\u0939 \u0935\u093F\u0915\u0947\u091F \u092A\u0930\u0964 \u0935\u093F\u0930\u093E\u091F \u0915\u094B\u0939\u0932\u0940 \u0928\u0947 \u0936\u093E\u0928\u0926\u093E\u0930 \u0905\u0920\u0939\u0924\u094D\u0924\u0930 \u0930\u0928 \u092C\u0928\u093E\u090F \u0939\u0948\u0902 \u0914\u0930 \u0905\u092D\u0940 \u092D\u0940 \u0915\u094D\u0930\u0940\u091C\u093C \u092A\u0930 \u0939\u0948\u0902\u0964 \u0930\u0935\u0940\u0902\u0926\u094D\u0930 \u091C\u0921\u0947\u091C\u093E \u092D\u0940 \u092C\u0924\u094D\u0924\u0940\u0938 \u0930\u0928 \u092A\u0930 \u0916\u0947\u0932 \u0930\u0939\u0947 \u0939\u0948\u0902\u0964',
     transcript: 'Bharat-Australia 4th Test: Bharat <strong>280/6</strong>. Virat Kohli <strong>78*</strong> run, abhi bhi crease par. Jadeja 32* par.',
-    title: 'Cricket Score'
+    title: 'Cricket Score',
+    hasDeepDive: true,
+    followUpPills: [
+      { label: 'Kohli ki innings?', active: true },
+      { label: 'Match ka status?', active: false },
+      { label: 'Series standing?', active: false }
+    ],
+    deepDiveSpeakText: '\u0915\u094D\u0930\u093F\u0915\u0947\u091F \u0915\u0940 \u0935\u093F\u0938\u094D\u0924\u0943\u0924 \u091C\u093E\u0928\u0915\u093E\u0930\u0940\u0964 \u0935\u093F\u0930\u093E\u091F \u0915\u094B\u0939\u0932\u0940 \u0928\u0947 \u0905\u0920\u0939\u0924\u094D\u0924\u0930 \u0930\u0928 \u092C\u0928\u093E\u090F \u0939\u0948\u0902, \u091B\u0939 \u091A\u094C\u0915\u0947 \u0914\u0930 \u0926\u0938 \u092C\u093E\u0909\u0902\u0921\u094D\u0930\u0940 \u0932\u0917\u093E\u0908 \u0939\u0948\u0902\u0964 \u0930\u0935\u0940\u0902\u0926\u094D\u0930 \u091C\u0921\u0947\u091C\u093E \u092D\u0940 \u092C\u0924\u094D\u0924\u0940\u0938 \u0930\u0928 \u092A\u0930 \u0916\u0947\u0932 \u0930\u0939\u0947 \u0939\u0948\u0902\u0964 \u092D\u093E\u0930\u0924 \u0915\u094B \u0905\u092D\u0940 \u0924\u0940\u0928 \u0938\u094C \u0930\u0928 \u0914\u0930 \u092C\u0928\u093E\u0928\u0947 \u0939\u0948\u0902\u0964 \u0938\u0940\u0930\u0940\u091C\u093C \u092E\u0947\u0902 \u092D\u093E\u0930\u0924 \u090F\u0915-\u090F\u0915 \u0938\u0947 \u092C\u0930\u093E\u092C\u0930\u0940 \u092A\u0930 \u0939\u0948\u0964',
+    deepDiveTranscript: 'Virat Kohli ne <strong>78* run</strong> banaaye hain \u2014 6 chauke aur 10 boundary.<br><br>Jadeja <strong>32* par</strong> khel rahe hain. Bharat ko abhi <strong>300+ ka score</strong> banana hai.<br><br>Series mein Bharat <strong>1-1</strong> se barabari par hai. Yeh match series ke liye nirnayak hai.'
   },
   {
     category: 'SONE KA BHAAV',
     badgeClass: 'badge-gold',
+    image: IMG_BASE + '/story-gold.jpg',
     speakText: '\u0938\u094B\u0928\u0947 \u0915\u093E \u092D\u093E\u0935 \u0906\u091C \u092C\u093E\u0938\u0920 \u0939\u091C\u093C\u093E\u0930 \u091A\u093E\u0930 \u0938\u094C \u092A\u091A\u093E\u0938 \u0930\u0941\u092A\u092F\u0947 \u092A\u094D\u0930\u0924\u093F \u0926\u0938 \u0917\u094D\u0930\u093E\u092E \u0939\u0948, \u0915\u0932 \u0915\u0940 \u0924\u0941\u0932\u0928\u093E \u092E\u0947\u0902 \u090F\u0915 \u0938\u094C \u092C\u0940\u0938 \u0930\u0941\u092A\u092F\u0947 \u0915\u0940 \u092C\u0922\u093C\u094B\u0924\u0930\u0940 \u0939\u0941\u0908 \u0939\u0948\u0964 \u091A\u093E\u0901\u0926\u0940 \u091A\u094C\u0939\u0924\u094D\u0924\u0930 \u0939\u091C\u093C\u093E\u0930 \u0906\u0920 \u0938\u094C \u0930\u0941\u092A\u092F\u0947 \u092A\u094D\u0930\u0924\u093F \u0915\u093F\u0932\u094B \u092A\u0930 \u0938\u094D\u0925\u093F\u0930 \u0939\u0948\u0964',
     transcript: 'Sone ka bhaav: <strong>\u20B962,450 prati 10 gram</strong> (+\u20B9120). Chaandi: <strong>\u20B974,800 prati kilo</strong>.',
-    title: 'Sone-Chaandi ke Bhaav'
+    title: 'Sone-Chaandi ke Bhaav',
+    hasDeepDive: true,
+    followUpPills: [
+      { label: 'Sone ka trend?', active: true },
+      { label: 'Kya sona khareedein?', active: false },
+      { label: 'Chaandi ka haal?', active: false }
+    ],
+    deepDiveSpeakText: '\u0938\u094B\u0928\u0947 \u0915\u0947 \u092C\u093E\u0930\u0947 \u092E\u0947\u0902 \u0935\u093F\u0938\u094D\u0924\u0943\u0924 \u091C\u093E\u0928\u0915\u093E\u0930\u0940\u0964 \u0938\u094B\u0928\u0947 \u0915\u093E \u092D\u093E\u0935 \u092A\u093F\u091B\u0932\u0947 \u090F\u0915 \u0939\u092B\u094D\u0924\u0947 \u092E\u0947\u0902 \u0932\u0917\u093E\u0924\u093E\u0930 \u092C\u0922\u093C \u0930\u0939\u093E \u0939\u0948\u0964 \u0905\u0902\u0924\u0930\u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u092C\u093E\u091C\u093C\u093E\u0930 \u092E\u0947\u0902 \u0905\u0928\u093F\u0936\u094D\u091A\u093F\u0924\u0924\u093E \u0915\u0947 \u0915\u093E\u0930\u0923 \u0938\u094B\u0928\u0947 \u0915\u0940 \u092E\u093E\u0902\u0917 \u092C\u0922\u093C\u0940 \u0939\u0948\u0964 \u091A\u093E\u0901\u0926\u0940 \u0938\u094D\u0925\u093F\u0930 \u0939\u0948 \u0915\u094D\u092F\u094B\u0902\u0915\u093F \u0914\u0926\u094D\u092F\u094B\u0917\u093F\u0915 \u092E\u093E\u0902\u0917 \u0915\u092E\u091C\u093C\u094B\u0930 \u0939\u0948\u0964 \u0935\u093F\u0936\u0947\u0937\u091C\u094D\u091E\u094B\u0902 \u0915\u093E \u0915\u0939\u0928\u093E \u0939\u0948 \u0915\u093F \u0936\u093E\u0926\u0940 \u0915\u0947 \u0938\u0940\u091C\u093C\u0928 \u0924\u0915 \u0938\u094B\u0928\u093E \u0914\u0930 \u092C\u0922\u093C \u0938\u0915\u0924\u093E \u0939\u0948\u0964',
+    deepDiveTranscript: 'Sone ka bhaav <strong>pichhle 1 hafte</strong> mein lagaataar badh raha hai \u2014 antrarashtriya anishchitta ke kaaran.<br><br>Visheshagyon ka kahna hai ki <strong>shaadi ke season</strong> tak sona aur badh sakta hai.<br><br>Chaandi <strong>\u20B974,800/kg</strong> par sthir hai kyunki audyogik maang kamzor hai.'
   },
   {
     category: 'VISHESH KHABAR',
     badgeClass: 'badge-good',
+    image: IMG_BASE + '/story-gaurav.jpg',
     speakText: '\u0914\u0930 \u0905\u092C \u090F\u0915 \u0935\u093F\u0936\u0947\u0937 \u0916\u092C\u0930\u0964 \u0935\u093E\u0930\u093E\u0923\u0938\u0940 \u0915\u0947 \u0905\u0930\u094D\u091C\u0941\u0928 \u0936\u0930\u094D\u092E\u093E, \u091C\u094B \u092C\u0928\u093E\u0930\u0938 \u0939\u093F\u0902\u0926\u0942 \u0935\u093F\u0936\u094D\u0935\u0935\u093F\u0926\u094D\u092F\u093E\u0932\u092F \u0915\u0947 \u091B\u093E\u0924\u094D\u0930 \u0939\u0948\u0902, \u0928\u0947 \u0930\u093E\u0937\u094D\u091F\u094D\u0930\u0940\u092F \u0935\u093F\u091C\u094D\u091E\u093E\u0928 \u0928\u0935\u093E\u091A\u093E\u0930 \u092A\u0941\u0930\u0938\u094D\u0915\u093E\u0930 \u091C\u0940\u0924\u093E \u0939\u0948\u0964 \u0907\u0928\u094D\u0939\u094B\u0902\u0928\u0947 \u090F\u0915 \u0915\u092E \u0932\u093E\u0917\u0924 \u0915\u093E \u091C\u0932 \u0936\u094B\u0927\u0915 \u092F\u0902\u0924\u094D\u0930 \u092C\u0928\u093E\u092F\u093E \u0939\u0948 \u091C\u094B \u0917\u094D\u0930\u093E\u092E\u0940\u0923 \u0915\u094D\u0937\u0947\u0924\u094D\u0930\u094B\u0902 \u092E\u0947\u0902 \u092D\u0940 \u092A\u094D\u0930\u092D\u093E\u0935\u0940 \u0939\u0948\u0964 \u0935\u093E\u0930\u093E\u0923\u0938\u0940 \u0915\u093E \u0928\u093E\u092E \u0926\u0947\u0936 \u092E\u0947\u0902 \u0917\u094C\u0930\u0935\u0936\u093E\u0932\u0940 \u0939\u0941\u0906\u0964',
     transcript: 'Varanasi ke <strong>Arjun Sharma</strong> (BHU) ne <strong>Rashtriya Vigyan Navaachar Puraskaar</strong> jeeta. Kam laagat ka jal shodhak yantra banaya jo gramin kshetron mein prabhaavi hai. <strong>Varanasi ka gaurav!</strong>',
-    title: 'Varanasi ka Gaurav'
+    title: 'Varanasi ka Gaurav',
+    hasDeepDive: true,
+    followUpPills: [
+      { label: 'Kya banaya hai?', active: true },
+      { label: 'Arjun ke baare mein?', active: false },
+      { label: 'Puraskaar details?', active: false }
+    ],
+    deepDiveSpeakText: '\u0935\u093E\u0930\u093E\u0923\u0938\u0940 \u0915\u0947 \u0905\u0930\u094D\u091C\u0941\u0928 \u0936\u0930\u094D\u092E\u093E \u0915\u0947 \u092C\u093E\u0930\u0947 \u092E\u0947\u0902 \u0914\u0930 \u091C\u093E\u0928\u0915\u093E\u0930\u0940\u0964 \u0905\u0930\u094D\u091C\u0941\u0928 \u0928\u0947 \u090F\u0915 \u0915\u092E \u0932\u093E\u0917\u0924 \u0915\u093E \u091C\u0932 \u0936\u094B\u0927\u0915 \u092F\u0902\u0924\u094D\u0930 \u092C\u0928\u093E\u092F\u093E \u0939\u0948 \u091C\u094B \u0938\u094B\u0932\u0930 \u090A\u0930\u094D\u091C\u093E \u0938\u0947 \u091A\u0932\u0924\u093E \u0939\u0948\u0964 \u092F\u0939 \u092F\u0902\u0924\u094D\u0930 \u0917\u094D\u0930\u093E\u092E\u0940\u0923 \u0915\u094D\u0937\u0947\u0924\u094D\u0930\u094B\u0902 \u092E\u0947\u0902 \u092A\u0940\u0928\u0947 \u0915\u093E \u092A\u093E\u0928\u0940 \u0936\u0941\u0926\u094D\u0927 \u0915\u0930\u0924\u093E \u0939\u0948\u0964 \u0905\u0930\u094D\u091C\u0941\u0928 \u092C\u0940\u090F\u091A\u092F\u0942 \u092E\u0947\u0902 \u092A\u0930\u094D\u092F\u093E\u0935\u0930\u0923 \u0935\u093F\u091C\u094D\u091E\u093E\u0928 \u0915\u0947 \u091B\u093E\u0924\u094D\u0930 \u0939\u0948\u0902\u0964 \u0909\u0928\u094D\u0939\u0947\u0902 \u0930\u093E\u0937\u094D\u091F\u094D\u0930\u092A\u0924\u093F \u0938\u0947 \u092A\u0941\u0930\u0938\u094D\u0915\u093E\u0930 \u092E\u093F\u0932\u0947\u0917\u093E\u0964',
+    deepDiveTranscript: 'Arjun Sharma ne ek <strong>kam laagat ka jal shodhak yantra</strong> banaya hai jo solar oorja se chalta hai.<br><br>Yeh yantra <strong>gramin kshetron</strong> mein peene ka paani shudh karta hai \u2014 laagat sirf <strong>\u20B93,500</strong>.<br><br>Arjun BHU mein <strong>Paryavaran Vigyan</strong> ke chhatr hain. Unhe <strong>Rashtrapati se puraskaar</strong> milega.'
   },
   {
     category: 'SAMAAPTI',
     badgeClass: 'badge-weather',
+    image: IMG_BASE + '/story-closing.jpg',
     speakText: '\u092F\u0939 \u0925\u0940 \u0906\u091C \u0915\u0940 \u092A\u094D\u0930\u092E\u0941\u0916 \u0916\u092C\u0930\u0947\u0902, \u0930\u093E\u091C\u0947\u0936 \u091C\u0940\u0964 \u0938\u093E\u0924 \u0938\u092E\u093E\u091A\u093E\u0930, \u0938\u093E\u0924 \u092E\u093F\u0928\u091F \u092E\u0947\u0902\u0964 \u0915\u0932 \u0938\u0941\u092C\u0939 \u092B\u093F\u0930 \u092E\u093F\u0932\u0947\u0902\u0917\u0947 \u0928\u0908 \u0916\u092C\u0930\u094B\u0902 \u0915\u0947 \u0938\u093E\u0925\u0964 \u0906\u092A\u0915\u093E \u0926\u093F\u0928 \u092E\u0902\u0917\u0932\u092E\u092F \u0939\u094B\u0964 \u0928\u092E\u0938\u094D\u0915\u093E\u0930\u0964',
     transcript: 'Yeh thi aaj ki pramukh khabren. <strong>7 samachar, 7 minute.</strong> Kal subah phir milenge. <strong>Aapka din mangalmay ho. Namaskar.</strong>',
     title: 'Samaapti'
@@ -716,6 +809,7 @@ const punjabiStories = [
   {
     category: 'KHABREIN',
     badgeClass: 'badge-weather',
+    image: IMG_BASE + '/story-weather.jpg',
     speakText: '\u0A38\u0A24 \u0A38\u0A4D\u0A30\u0A40 \u0A05\u0A15\u0A3E\u0A32\u0964 \u0A1C\u0A40\u0A13 \u0A28\u0A3F\u0A0A\u0A1C\u0A3C \u0A0F\u0A06\u0A08 \u0A35\u0A3F\u0A71\u0A1A \u0A24\u0A41\u0A39\u0A3E\u0A21\u0A3E \u0A38\u0A41\u0A06\u0A17\u0A24 \u0A39\u0A48\u0964 \u0A05\u0A71\u0A1C \u0A2C\u0A41\u0A71\u0A27\u0A35\u0A3E\u0A30, \u0A2B\u0A71\u0A17\u0A23 \u0A26\u0A3E \u0A2E\u0A39\u0A40\u0A28\u0A3E\u0964 \u0A32\u0A41\u0A27\u0A3F\u0A06\u0A23\u0A47 \u0A35\u0A3F\u0A71\u0A1A \u0A05\u0A71\u0A1C \u0A26\u0A3E \u0A24\u0A3E\u0A2A\u0A2E\u0A3E\u0A28 \u0A2C\u0A71\u0A24\u0A40 \u0A21\u0A3F\u0A17\u0A30\u0A40 \u0A39\u0A48, \u0A26\u0A41\u0A2A\u0A39\u0A3F\u0A30 \u0A24\u0A4B\u0A02 \u0A2C\u0A3E\u0A05\u0A26 \u0A2E\u0A4C\u0A38\u0A2E \u0A38\u0A3E\u0A2B \u0A30\u0A39\u0A47\u0A17\u0A3E\u0964 \u0A06\u0A13 \u0A38\u0A41\u0A23\u0A40\u0A0F \u0A05\u0A71\u0A1C \u0A26\u0A40\u0A06\u0A02 \u0A16\u0A3E\u0A38 \u0A16\u0A2C\u0A30\u0A3E\u0A02\u0964',
     transcript: '<strong>Sat Sri Akal!</strong> Jio News AI vich tuhadda suaagat hai. Aaj budhvaar, Phaggan da mahina. Ludhiane vich aaj da taapman <strong>30\u00B0C</strong>, duphir ton baad mausam saaf rahega. Aao suniye aaj dian khaas khabraan.',
     title: 'Shuruat'
@@ -723,13 +817,23 @@ const punjabiStories = [
   {
     category: 'MANDI BHAAV',
     badgeClass: 'badge-gold',
+    image: IMG_BASE + '/story-mandi.jpg',
     speakText: '\u0A2E\u0A70\u0A21\u0A40 \u0A2D\u0A3E\u0A05 \u0A26\u0A40 \u0A17\u0A71\u0A32\u0964 \u0A05\u0A71\u0A1C \u0A15\u0A23\u0A15 \u0A26\u0A3E \u0A2D\u0A3E\u0A05 \u0A26\u0A4B \u0A39\u0A1C\u0A3C\u0A3E\u0A30 \u0A24\u0A3F\u0A70\u0A28 \u0A38\u0A4C \u0A30\u0A41\u0A2A\u0A0F \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A15\u0A41\u0A07\u0A70\u0A1F\u0A32 \u0A39\u0A48\u0964 \u0A1D\u0A4B\u0A28\u0A47 \u0A26\u0A3E \u0A2D\u0A3E\u0A05 \u0A24\u0A47\u0A30\u0A3E\u0A02 \u0A38\u0A4C \u0A30\u0A41\u0A2A\u0A0F \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A15\u0A41\u0A07\u0A70\u0A1F\u0A32 \u0A39\u0A48\u0964 \u0A38\u0A30\u0A4D\u0A39\u0A4B\u0A02 \u0A26\u0A3E \u0A2D\u0A3E\u0A05 \u0A2A\u0A70\u0A1C \u0A39\u0A1C\u0A3C\u0A3E\u0A30 \u0A30\u0A41\u0A2A\u0A0F \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A15\u0A41\u0A07\u0A70\u0A1F\u0A32 \u0A39\u0A48\u0964 \u0A2E\u0A4C\u0A38\u0A2E \u0A1A\u0A70\u0A17\u0A3E \u0A30\u0A39\u0A3F\u0A06 \u0A24\u0A47 \u0A2D\u0A3E\u0A05 \u0A38\u0A25\u0A3F\u0A30 \u0A39\u0A28\u0964',
     transcript: '<strong>Mandi Bhaav:</strong> Kanak \u2014 <strong>\u20B92,300/quintal</strong>. Jhone \u2014 <strong>\u20B91,300/quintal</strong>. Sarhon \u2014 <strong>\u20B95,000/quintal</strong>. Mausam changa te bhaav sthir hain.',
-    title: 'Mandi Bhaav'
+    title: 'Mandi Bhaav',
+    hasDeepDive: true,
+    followUpPills: [
+      { label: 'Kanak da rate?', active: true },
+      { label: 'Agge rate vadhange?', active: false },
+      { label: 'Kedi mandi changgi?', active: false }
+    ],
+    deepDiveSpeakText: '\u0A2E\u0A70\u0A21\u0A40 \u0A2D\u0A3E\u0A05 \u0A2C\u0A3E\u0A30\u0A47 \u0A39\u0A4B\u0A30 \u0A1C\u0A3E\u0A23\u0A15\u0A3E\u0A30\u0A40\u0964 \u0A15\u0A23\u0A15 \u0A26\u0A3E \u0A2D\u0A3E\u0A05 \u0A26\u0A4B \u0A39\u0A1C\u0A3C\u0A3E\u0A30 \u0A24\u0A3F\u0A70\u0A28 \u0A38\u0A4C \u0A30\u0A41\u0A2A\u0A0F \u0A2A\u0A4D\u0A30\u0A24\u0A40 \u0A15\u0A41\u0A07\u0A70\u0A1F\u0A32 \u0A39\u0A48\u0964 \u0A2A\u0A3F\u0A1B\u0A32\u0A47 \u0A39\u0A2B\u0A3C\u0A24\u0A47 \u0A28\u0A3E\u0A32\u0A4B\u0A02 \u0A2A\u0A70\u0A1C\u0A3E\u0A39 \u0A30\u0A41\u0A2A\u0A0F \u0A35\u0A27\u0A47 \u0A39\u0A28\u0964 \u0A32\u0A41\u0A27\u0A3F\u0A06\u0A23\u0A47 \u0A26\u0A40 \u0A2E\u0A70\u0A21\u0A40 \u0A35\u0A3F\u0A71\u0A1A \u0A38\u0A2D \u0A24\u0A4B\u0A02 \u0A35\u0A71\u0A27 \u0A30\u0A47\u0A1F \u0A2E\u0A3F\u0A32 \u0A30\u0A3F\u0A39\u0A3E \u0A39\u0A48\u0964 \u0A2E\u0A4C\u0A38\u0A2E \u0A1A\u0A70\u0A17\u0A3E \u0A30\u0A39\u0A3F\u0A06 \u0A24\u0A47 \u0A05\u0A17\u0A32\u0A47 \u0A39\u0A2B\u0A3C\u0A24\u0A47 \u0A2D\u0A3E\u0A05 \u0A39\u0A4B\u0A30 \u0A35\u0A27 \u0A38\u0A15\u0A26\u0A47 \u0A39\u0A28\u0964',
+    deepDiveTranscript: 'Kanak da bhaav <strong>\u20B92,300/quintal</strong> hai \u2014 pichhle hafte naalon <strong>\u20B950 vadh</strong>.<br><br><strong>Ludhiane di mandi</strong> vich sabh ton vadh rate mil riha hai is hafte.<br><br>Mausam changa riha te <strong>agle hafte bhaav hor vadh</strong> sakde han. Sarkar di MSP <strong>\u20B92,275</strong> hai.'
   },
   {
     category: 'KISAN YOJANA',
     badgeClass: 'badge-local',
+    image: IMG_BASE + '/story-kisan.jpg',
     speakText: '\u0A15\u0A3F\u0A38\u0A3E\u0A28\u0A3E\u0A02 \u0A32\u0A08 \u0A16\u0A3E\u0A38 \u0A16\u0A2C\u0A30\u0964 \u0A2A\u0A70\u0A1C\u0A3E\u0A2C \u0A38\u0A30\u0A15\u0A3E\u0A30 \u0A28\u0A47 \u0A38\u0A4B\u0A32\u0A30 \u0A2A\u0A70\u0A2A \u0A2F\u0A4B\u0A1C\u0A28\u0A3E \u0A26\u0A3E \u0A10\u0A32\u0A3E\u0A28 \u0A15\u0A40\u0A24\u0A3E \u0A39\u0A48\u0964 \u0A07\u0A38 \u0A2F\u0A4B\u0A1C\u0A28\u0A3E \u0A35\u0A3F\u0A71\u0A1A \u0A15\u0A3F\u0A38\u0A3E\u0A28\u0A3E\u0A02 \u0A28\u0A42\u0A70 \u0A38\u0A4B\u0A32\u0A30 \u0A2A\u0A70\u0A2A \u0A32\u0A17\u0A3E\u0A09\u0A23 \u0A24\u0A47 \u0A38\u0A71\u0A24\u0A30 \u0A2A\u0A4D\u0A30\u0A24\u0A40\u0A36\u0A24 \u0A38\u0A2C\u0A38\u0A3F\u0A21\u0A40 \u0A26\u0A3F\u0A71\u0A24\u0A40 \u0A1C\u0A3E\u0A35\u0A47\u0A17\u0A40\u0964 \u0A2C\u0A3F\u0A1C\u0A32\u0A40 \u0A26\u0A3E \u0A2C\u0A3F\u0A71\u0A32 \u0A35\u0A40 \u0A18\u0A1F\u0A47\u0A17\u0A3E\u0964 \u0A05\u0A30\u0A1C\u0A3C\u0A40 \u0A2A\u0A3F\u0A70\u0A21 \u0A26\u0A47 \u0A2C\u0A32\u0A3E\u0A15 \u0A26\u0A2B\u0A3C\u0A24\u0A30 \u0A35\u0A3F\u0A71\u0A1A \u0A26\u0A3F\u0A13\u0964',
     transcript: '<strong>Punjab sarkar</strong> ne Solar Pump Yojana da ailaan kita hai. Kisanaan nu solar pump lagaun te <strong>70% subsidy</strong> ditti jaavegi. <strong>Bijli da bill vi ghatega.</strong> Arzi pind de block daftar vich dio.',
     title: 'Solar Pump Yojana',
@@ -745,6 +849,7 @@ const punjabiStories = [
   {
     category: 'SAMAAPTI',
     badgeClass: 'badge-weather',
+    image: IMG_BASE + '/story-closing.jpg',
     speakText: '\u0A07\u0A39 \u0A38\u0A28 \u0A05\u0A71\u0A1C \u0A26\u0A40\u0A06\u0A02 \u0A2A\u0A4D\u0A30\u0A2E\u0A41\u0A71\u0A16 \u0A16\u0A2C\u0A30\u0A3E\u0A02\u0964 \u0A1A\u0A3E\u0A30 \u0A38\u0A2E\u0A3E\u0A1A\u0A3E\u0A30, \u0A2A\u0A70\u0A1C \u0A2E\u0A3F\u0A70\u0A1F\u0A3E\u0A02 \u0A35\u0A3F\u0A71\u0A1A\u0964 \u0A15\u0A71\u0A32\u0A4D\u0A39 \u0A38\u0A35\u0A47\u0A30\u0A47 \u0A2B\u0A47\u0A30 \u0A2E\u0A3F\u0A32\u0A3E\u0A02\u0A17\u0A47 \u0A28\u0A35\u0A40\u0A06\u0A02 \u0A16\u0A2C\u0A30\u0A3E\u0A02 \u0A28\u0A3E\u0A32\u0964 \u0A35\u0A3E\u0A39\u0A3F\u0A17\u0A41\u0A30\u0A42 \u0A2E\u0A3F\u0A39\u0A30 \u0A15\u0A30\u0A47\u0964 \u0A38\u0A24 \u0A38\u0A4D\u0A30\u0A40 \u0A05\u0A15\u0A3E\u0A32\u0964',
     transcript: 'Eh san aaj dian pramukh khabraan. <strong>4 samachar, 5 minute.</strong> Kall savere pher milaange. <strong>Waheguru mihar kare. Sat Sri Akal.</strong>',
     title: 'Samaapti'
@@ -809,6 +914,7 @@ function renderBriefingStep(step) {
   content.style.opacity = '0';
   setTimeout(() => {
     let html = `<div class="story-badge ${story.badgeClass}">${story.category}</div>`;
+    if (story.image) html += `<img class="story-image" src="${story.image}" alt="${story.title}">`;
     html += `<div class="anchor-transcript"><div class="anchor-transcript-label">${story.title}</div><div class="anchor-transcript-text">${story.transcript}</div></div>`;
     if (story.followUpPills && !isDeepDiving) {
       html += '<div class="followup-pills">';
